@@ -1,4 +1,3 @@
-# atguigu/import_process/nodes/node_md_img.py
 import base64
 import os
 import re
@@ -15,42 +14,39 @@ from atguigu.tool.json_format_tool import json_format
 from atguigu.tool.logger import logger
 
 
+
+
 class NodeMDImg(NodeBase):
-    """
-    MarkDown图片处理节点：多模态图片理解
-    """
 
-    name = "node_md_img"
-
-
-    def get_md_content(self,state):
+    def get_md_content(self,state: ImportGraphState):
         md_path = state.get("md_path", "")
         if not md_path:
-            logger.error("md_path路径未提供")
-            raise ValueError("md_path路径未提供")
+            logger.error("md_path未提供")
+            raise ValueError("md_path路径必须提供")
         md_path_obj = Path(md_path)
         if not md_path_obj.exists():
-            logger.error("md文件不存在")
-            raise FileNotFoundError(f"md文件{md_path_obj}不存在")
-
+            logger.error("md_path路径不存在")
+            raise FileNotFoundError(f"md_path路径{md_path_obj}不存在")
         with open(md_path_obj, 'r', encoding="utf-8") as f:
             md_content = f.read()
 
         if not md_content:
-            logger.error("md文件内容为空")
-            raise ValueError("md文件内容为空")
-
+            logger.error("md_path文件内容为空")
+            raise ValueError("md_path文件内容为空")
         return md_content,md_path_obj
+
+
+
 
     def get_image_with_context_list(self,md_content,image_name_list,images_dir_path_obj):
         IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"}
         MAX_CONTEXT_LENGTH = 250
         image_with_context_list = []
+
         for image_name in image_name_list:
             if Path(image_name).suffix.lower() not in IMAGE_EXTENSIONS:
                 logger.warning(f"图片{image_name}格式不支持")
                 continue
-
             pattern = re.compile(r"!\[.*?\]\(.*?" + re.escape(image_name) + r"\)")
             match = pattern.search(md_content)
 
@@ -63,7 +59,6 @@ class NodeMDImg(NodeBase):
             post_text = md_content[end:min(len(md_content), end + MAX_CONTEXT_LENGTH)]
 
             image_path = str(images_dir_path_obj / image_name)
-
             image_with_context_list.append(
                 {
                     "image_name": image_name,
@@ -74,9 +69,9 @@ class NodeMDImg(NodeBase):
             )
         return image_with_context_list
 
+
     def get_image_with_summary_list(self,image_with_context_list):
-        # 限频率 滑动门
-        dq = deque(maxlen=30) # 双向队列
+        dq = deque(maxlen=30)
 
         llm = init_chat_model(
             model=LLMconfig.llm_default_model,
@@ -87,10 +82,10 @@ class NodeMDImg(NodeBase):
         )
 
         image_with_summary_list = []
+
         for image_with_context in image_with_context_list:
             current_time = time.time()
-            # 清理过期的请求
-            while dq and current_time - dq[0] >60:
+            while dq and current_time - dq[0] > 60:
                 dq.popleft()
             if dq and len(dq) == dq.maxlen:
                 time2wait = 60 - (current_time - dq[0])
@@ -102,7 +97,7 @@ class NodeMDImg(NodeBase):
                         dq.popleft()
             dq.append(current_time)
 
-            with open(image_with_context.get("image_path",""), 'rb') as f:
+            with open(image_with_context.get("image_path", ""), 'rb') as f:
                 image_data = f.read()
                 base64_str = base64.b64encode(image_data).decode('utf-8')
 
@@ -113,41 +108,36 @@ class NodeMDImg(NodeBase):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": "data:image/jpeg;base64,"+ base64_str,
+                                "url": "data:image/jpeg;base64," + base64_str,
                             },
                         },
-                        {"type": "text", "text":  f"""
-                                        这是一张图片，图片上文部分为"{image_with_context.get("pre_text")}"，
-                                        下文部分为"{image_with_context.get("post_text")}"，
-                                        请用中文简要总结这张图片的摘要,字数在50字以内。"""},
+                        {"type": "text", "text": f"""
+                                                这是一张图片，图片上文部分为"{image_with_context.get("pre_text")}"，
+                                                下文部分为"{image_with_context.get("post_text")}"，
+                                                请用中文简要总结这张图片的摘要,字数在50字以内。"""},
                     ],
                 },
-            ] # 注意这里的逗号要删掉
+            ]
 
-
-
-
-            res =  llm.invoke(messages)
+            res = llm.invoke(messages)
             image_with_summary_list.append(
                 {
-                    "image_name":image_with_context.get("image_name"),
-                    "image_path":image_with_context.get("image_path"),
-                    "summary":res.content
+                    "image_name": image_with_context.get("image_name"),
+                    "image_path": image_with_context.get("image_path"),
+                    "summary": res.content
                 }
             )
+
         return image_with_summary_list
 
-
-
+    name = "node_md_img"
     def process(self, state: ImportGraphState):
         md_content,md_path_obj=self.get_md_content(state)
 
-        # 构造图片存储路径
+
         images_dir_path_obj = md_path_obj.parent / "images"
         if not images_dir_path_obj.exists():
-            return {
-                "md_content": md_content,
-            }
+            return md_content
 
         image_name_list = os.listdir(images_dir_path_obj)
         if not image_name_list:
@@ -162,10 +152,12 @@ class NodeMDImg(NodeBase):
         return image_with_summary_list
 
 
+
+
 if __name__ == '__main__':
     node = NodeMDImg()
-    init_state={
-        "md_path":r"D:\1neiwangtong\output\hak180产品安全手册\hak180产品安全手册.md"
+    init_state = {
+        "md_path": r"D:\1neiwangtong\output\hak180产品安全手册\hak180产品安全手册.md"
     }
     result = node(init_state)
     logger.info(json_format(result))
