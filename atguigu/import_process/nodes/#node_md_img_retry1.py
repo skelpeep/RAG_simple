@@ -6,14 +6,14 @@ from collections import deque
 from pathlib import Path
 
 from langchain.chat_models import init_chat_model
+from minio.deleteobjects import DeleteObject
 
-from atguigu.config.config import LLMconfig
+from atguigu.config.config import LLMconfig, MinIoConfig
 from atguigu.import_process.base import NodeBase
 from atguigu.import_process.state import ImportGraphState
 from atguigu.tool.json_format_tool import json_format
 from atguigu.tool.logger import logger
-
-
+from atguigu.tool.minio_client_tool import get_minio_client
 
 
 class NodeMDImg(NodeBase):
@@ -130,6 +130,53 @@ class NodeMDImg(NodeBase):
 
         return image_with_summary_list
 
+    def get_image_with_summary_and_url_list(self, image_with_summary_list):
+        upload_dir = MinIoConfig.minio_img_dir
+        minio_client = get_minio_client()
+
+        old_image_list = minio_client.list_objects(bucket_name=MinIoConfig.minio_bucket_name, prefix=upload_dir, recursive=True)
+        delete_image_list = [DeleteObject(obj.object_name)  for obj in old_image_list ]
+
+        errors = minio_client.remove_objects(
+             bucket_name=MinIoConfig.minio_bucket_name,
+             delete_object_list=delete_image_list,
+         )
+        for error in errors:
+            logger.error("error occurred when deleting object", error)
+
+        image_with_summary_and_url_list = []
+        for image_with_summary in image_with_summary_list:
+            minio_client.fput_object(
+                bucket_name=MinIoConfig.minio_bucket_name,
+                object_name=upload_dir + "/" + image_with_summary.get("image_name"),
+                file_path=image_with_summary.get("image_path"),
+            )
+            url = f"http://{MinIoConfig.minio_endpoint}/{MinIoConfig.minio_bucket_name}/{upload_dir}/{image_with_summary.get('image_name')}"
+            image_with_summary_and_url_list.append(
+                {**image_with_summary,
+                 "url": url
+                 }
+            )
+        return  image_with_summary_and_url_list
+
+
+
+    def replace_md_image(self, image_with_summary_and_url_list, md_path_obj, md_content):
+        for image_with_summary_and_url in image_with_summary_and_url_list:
+            pattern = re.compile(r"!\[.*?\]\(.*?" + re.escape(image_with_summary_and_url.get("image_name")) + r"\)")
+            md_content = pattern.sub(
+                lambda m: f"![{image_with_summary_and_url.get('summary')}]({image_with_summary_and_url.get('url')})",
+                md_content
+            )
+
+        new_md_path_obj = md_path_obj.parent / str(md_path_obj.stem + "_new.md")
+        with open(new_md_path_obj, 'w', encoding='utf-8') as f:
+            f.write(md_content)
+
+        return new_md_path_obj,md_content
+
+
+
     name = "node_md_img"
     def process(self, state: ImportGraphState):
         md_content,md_path_obj=self.get_md_content(state)
@@ -148,11 +195,12 @@ class NodeMDImg(NodeBase):
 
         image_with_context_list=self.get_image_with_context_list(md_content, image_name_list, images_dir_path_obj)
         image_with_summary_list=self.get_image_with_summary_list(image_with_context_list)
+        image_with_summary_and_url_list=self.get_image_with_summary_and_url_list(image_with_summary_list)
+        new_md_path_obj, md_content = self.replace_md_image(image_with_summary_and_url_list, md_path_obj, md_content)
 
-        return image_with_summary_list
-
-
-
+        return {
+            "md_content": md_content
+        }
 
 if __name__ == '__main__':
     node = NodeMDImg()
