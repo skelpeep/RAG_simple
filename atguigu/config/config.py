@@ -1,5 +1,7 @@
 import os
+
 from dotenv import load_dotenv
+
 load_dotenv(override=True)
 
 
@@ -7,7 +9,7 @@ class MineruConfig:
     mineru_token=os.getenv("MINERU_TOKEN")
     mineru_base_url=os.getenv("MINERU_BASE_URL")
 
-class LLMconfig:
+class LLMConfig:
     openai_api_key=os.getenv("OPENAI_API_KEY")
     openai_api_base=os.getenv("OPENAI_API_BASE")
     llm_default_model=os.getenv("LLM_DEFAULT_MODEL")
@@ -30,3 +32,15 @@ class EmbeddingConfig:
     bge_device=os.getenv("BGE_DEVICE")
     # 特殊处理：将.env中的1/0转为布尔值，兼容常见的数字/字符串格式
     bge_fp16=True if os.getenv("BGE_FP16") in ("1", "True", "true") else False
+
+
+class MilvusConfig:
+    # ====================
+    # Vector Database (Milvus)
+    # ====================
+    # Milvus 连接地址
+    milvus_url = os.getenv("MILVUS_URL")
+    # 知识库切片集合名
+    chunks_collection = os.getenv("CHUNKS_COLLECTION")
+    # 商品名称集合名
+    item_name_collection = os.getenv("ITEM_NAME_COLLECTION")
