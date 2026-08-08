@@ -153,7 +153,7 @@ class NodeDocumentSplit(NodeBase):
         final_section_list = self.get_final_section_list(section_list,file_title,md_path_obj)
 
         return {
-            "chucks": final_section_list
+            "chunks": final_section_list
         }
 
 
