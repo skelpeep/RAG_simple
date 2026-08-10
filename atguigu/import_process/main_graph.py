@@ -63,7 +63,7 @@ class MainGraphRunner:
 
 if __name__ == '__main__':
     init_state = {
-        "local_file_path": r"D:\1neiwangtong\渊哥\视频资料相关\11、掌柜智库01\资料\05-设备手册汇总\doc\hak180产品安全手册.pdf",
+        "local_file_path": r"D:\1neiwangtong\output\hak180产品安全手册.pdf",
         "local_dir": r"D:\1neiwangtong\output"
     }
 

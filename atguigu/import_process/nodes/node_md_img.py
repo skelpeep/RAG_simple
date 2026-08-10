@@ -9,7 +9,7 @@ from pathlib import Path
 from langchain.chat_models import init_chat_model
 from minio.deleteobjects import DeleteObject
 
-from atguigu.config.config import LLMconfig, MinIoConfig
+from atguigu.config.config import LLMConfig, MinIoConfig
 from atguigu.import_process.base import NodeBase
 from atguigu.import_process.state import ImportGraphState
 from atguigu.tool.json_format_tool import json_format
@@ -81,11 +81,11 @@ class NodeMDImg(NodeBase):
         dq = deque(maxlen=30) # 双向队列
 
         llm = init_chat_model(
-            model=LLMconfig.llm_default_model,
+            model=LLMConfig.llm_default_model,
             model_provider="openai",
-            base_url=LLMconfig.openai_api_base,
-            api_key=LLMconfig.openai_api_key,
-            temperature=LLMconfig.llm_default_temperature
+            base_url=LLMConfig.openai_api_base,
+            api_key=LLMConfig.openai_api_key,
+            temperature=LLMConfig.llm_default_temperature
         )
 
         image_with_summary_list = []

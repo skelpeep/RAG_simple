@@ -153,7 +153,7 @@ class NodeItemNameRecognition(NodeBase):
             "sparse_vector": embedding.get("sparse")[0]
         }
 
-        milvus_client.insert(collection_name=collection_name, data=[data])
+        milvus_client.insert(collection_name=collection_name, data=data)
 
         for chunk in chunks:
             chunk["item_name"] = item_name
@@ -168,6 +168,10 @@ class NodeItemNameRecognition(NodeBase):
         collection_name, milvus_client = self.create_milvus_collection()
 
         self.insert_data_backup(chunks, collection_name, file_title, item_name, milvus_client)
+
+        with open(r"D:\1neiwangtong\output\hak180产品安全手册\item_name_chunks.json","w",encoding="utf-8") as f:
+            # json.dump(chunks, f, ensure_ascii=False, indent=4)
+            f.write(json_format(chunks))
 
         return {
             "item_name":item_name,
