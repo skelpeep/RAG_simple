@@ -1,3 +1,4 @@
+from langgraph.constants import END
 from langgraph.graph import StateGraph
 
 from atguigu.query_process.nodes.node_answer_output import NodeAnswerOutput
@@ -34,14 +35,12 @@ class MainGraphRunner:
     def add_edges(self):
         self.builder.set_entry_point(NodeItemNameConfirm.name)
         self.builder.add_conditional_edges(NodeItemNameConfirm.name, self.after_confirm_router)
-        self.builder.add_edge(NodeItemNameConfirm.name, NodeSearchEmbedding.name)
-        self.builder.add_edge(NodeItemNameConfirm.name, NodeSearchEmbeddingHyde.name)
-        self.builder.add_edge(NodeItemNameConfirm.name, NodeWebSearchMcp.name)
         self.builder.add_edge(NodeSearchEmbedding.name, NodeRrf.name)
         self.builder.add_edge(NodeSearchEmbeddingHyde.name, NodeRrf.name)
         self.builder.add_edge(NodeWebSearchMcp.name, NodeRrf.name)
         self.builder.add_edge(NodeRrf.name, NodeRerank.name)
         self.builder.add_edge(NodeRerank.name, NodeAnswerOutput.name)
+        self.builder.add_edge(NodeAnswerOutput.name, END)
 
 
     def after_confirm_router(self,state:QueryGraphState):

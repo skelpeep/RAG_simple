@@ -2,6 +2,8 @@ import json
 
 
 import numpy as np
+from bson import ObjectId
+
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -11,6 +13,8 @@ class NumpyEncoder(json.JSONEncoder):
             return float(obj)      # 这里会把 float16 转为 Python float
         elif isinstance(obj, np.ndarray):
             return obj.tolist()
+        elif isinstance(obj,ObjectId):
+            return str(obj)
         return super().default(obj)
 
 

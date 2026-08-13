@@ -20,18 +20,17 @@ class NodeSearchEmbedding(NodeBase):
 
 
     def process(self, state: QueryGraphState):
-        rewritten_query = state.get("rewritten_query")
-        item_names = state.get("item_names")
+        rewritten_query = state.get("rewritten_query","")
+        item_names = state.get("item_names","")
         if not rewritten_query:
-            logger.error("rewritten_query 为空")
-            raise ValueError("rewritten_query 为空")
-
+            logger.error(" rewritten_query is None")
+            raise ValueError("rewritten_query is None")
         if not item_names:
-            logger.error("item_names 为空")
-            raise ValueError("item_names 为空")
+            logger.error(" item_names is None")
+            raise ValueError("item_names is None")
 
         embeddings = get_bge_m3_embedding([rewritten_query])
-        collection_name = MilvusConfig.chunks_collection
+        collection_name = MilvusConfig.item_name_collection
         dense_data = embeddings.get("dense")[0]
         sparse_data = embeddings.get("sparse")[0]
 
@@ -50,13 +49,7 @@ class NodeSearchEmbedding(NodeBase):
             expr=expr
         )
 
-        res =search_hybrid(
-            collection_name=collection_name,
-            reqs=reqs,
-            ranker=(0.8,0.2),
-            output_fields=["id","title","file_title","content","item_name"],
-            limit = 10
-        )
+        res = search_hybrid(collection_name,reqs,ranker=(0.8,0.2),output_fields=["id","title","file_title","content","item_name"])
 
         embedding_chunks = [
             {
@@ -66,8 +59,11 @@ class NodeSearchEmbedding(NodeBase):
             }
             for item in res[0]
         ]
+        return embedding_chunks
 
-        return {"embedding_chunks":embedding_chunks}
+
+
+
 
 if __name__ == "__main__":
     init_state = {

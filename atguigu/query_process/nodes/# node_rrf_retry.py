@@ -1,4 +1,3 @@
-# atguigu/query_process/nodes/node_rrf.py
 
 from atguigu.query_process.base import NodeBase
 from atguigu.query_process.state import QueryGraphState
@@ -25,31 +24,26 @@ class NodeRrf(NodeBase):
             raise ValueError("hyde_embedding_chunks is empty")
 
         weight_embedding = [
-            (embedding_chunks,1),
-            (hyde_embedding_chunks,1)
+            (embedding_chunks, 1),
+            (hyde_embedding_chunks, 1)
         ]
 
         final_chunks_dict = {}
 
-
-        for chunks,weight in weight_embedding:
-            for idx,chunk in enumerate(chunks,start=1):
+        for chunks, weight in weight_embedding:
+            for idx, chunk in enumerate(chunks, start=1):
                 chunk_id = chunk.get("id")
-                chunk_score = chunk.get("score") + weight/(idx + 60)
+                chunk_score = chunk.get("score") + weight / (idx + 60)
                 if chunk_id in final_chunks_dict:
                     final_chunks_dict.get(chunk_id)["score"] += chunk_score
                 else:
-                    chunk["score"]=chunk_score
-                    final_chunks_dict[chunk_id] =chunk
+                    chunk["score"] = chunk_score
+                    final_chunks_dict[chunk_id] = chunk
         # print(json_format(final_chunks_dict))
         rrf_chunks = sorted(final_chunks_dict.values(), key=lambda x: x["score"], reverse=True)
         return {
-            "rrf_chunks":rrf_chunks[:10]
+            "rrf_chunks": rrf_chunks[:10]
         }
-
-
-
-
 
 
 if __name__ == '__main__':

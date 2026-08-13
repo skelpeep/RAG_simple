@@ -18,9 +18,9 @@ def get_mongo_collection():
     global collection
     global db
     mongo_client=get_mongo_client()
-    if not db:
+    if db is None:
         db = mongo_client[MongoConfig.mongo_db_name]
-    if not collection:
+    if collection is None:
         collection = db["chat_history"]
         collection.create_index([("_id",1),("ts",-1),("session_id",1)])
     return collection
@@ -32,7 +32,7 @@ def get_recent_history_list(session_id,limit=10):
     return list(result) # 拿到的是游标对象，需要自己强转
 
 
-def add_or_update_history(session_id,role,text,rewritten_query=None,item_name=None,ts=None,_id=None):
+def add_or_update_history(session_id,role,text,rewritten_query=None,item_names=None,ts=None,_id=None):
     # 封装增和改数据库写成一个方法或者函数，因为传递参数只有id不同
     collection = get_mongo_collection()
     if _id:  # 修改
@@ -40,7 +40,7 @@ def add_or_update_history(session_id,role,text,rewritten_query=None,item_name=No
             "role":role,
             "text":text,
             "rewritten_query":rewritten_query,
-            "item_name":item_name,
+            "item_names":item_names,
             "ts":ts or time.time(),
             "_id":_id,
             "session_id":session_id
@@ -52,7 +52,7 @@ def add_or_update_history(session_id,role,text,rewritten_query=None,item_name=No
             "role": role,
             "text": text,
             "rewritten_query": rewritten_query,
-            "item_name": item_name,
+            "item_names": item_names,
             "ts": ts or time.time(),
             "session_id": session_id
         }
@@ -64,14 +64,13 @@ def clear_history(session_id):
     collection =get_mongo_collection()
     collection.delete_many({"session_id":session_id})
 
-def update_item_names_and_query(session_id, item_name=None, rewritten_query=None):
+def update_item_names_and_query(ids, item_names=None, rewritten_query=None):
     collection=get_mongo_collection()
     data = {
-        "session_id": session_id,
-        "item_name": item_name,
+        "item_names": item_names,
         "rewritten_query": rewritten_query
     }
-    collection.updateOne({"session_id":session_id}, {"$set":data})
+    collection.update_many({"_id":{"$in":ids}}, {"$set":data})
 
 if __name__ == '__main__':
     # add_or_update_history("test_001", "user", "咨询下烫金机。")

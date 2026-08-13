@@ -1,4 +1,3 @@
-# atguigu/query_process/nodes/node_search_embedding_hyde.py
 import json
 
 from langchain.chat_models import init_chat_model
@@ -12,7 +11,6 @@ from atguigu.tool.json_format_tool import json_format
 from atguigu.tool.logger import logger
 from atguigu.tool.milvus_client_tool import create_reqs, search_hybrid
 
-
 class NodeSearchEmbeddingHyde(NodeBase):
     """
     节点功能：HyDE (Hypothetical Document Embedding)
@@ -23,11 +21,6 @@ class NodeSearchEmbeddingHyde(NodeBase):
     name: str = "node_search_embedding_hyde"
 
     def process(self, state: QueryGraphState):
-        """
-        节点逻辑
-        :param state: 工作流状态对象
-        :return: 更新后的状态对象
-        """
         rewritten_query = state.get("rewritten_query")
         item_names = state.get("item_names")
         if not rewritten_query:
@@ -42,7 +35,7 @@ class NodeSearchEmbeddingHyde(NodeBase):
             model=LLMConfig.item_model,
             model_provider="openai",
             api_key=LLMConfig.openai_api_key,
-            base_url = LLMConfig.openai_api_base,
+            base_url=LLMConfig.openai_api_base,
             temperature=LLMConfig.llm_default_temperature
         )
 
@@ -51,9 +44,9 @@ class NodeSearchEmbeddingHyde(NodeBase):
                     ]
         res = llm.invoke(input=messages)
         hyde_answer = res.content
-        merged_query = f"{rewritten_query} {hyde_answer}"
+        merged_answer = f"{rewritten_query} {hyde_answer}"
 
-        embeddings = get_bge_m3_embedding([merged_query])
+        embeddings = get_bge_m3_embedding([merged_answer])
         collection_name = MilvusConfig.chunks_collection
         dense_data = embeddings.get("dense")[0]
         sparse_data = embeddings.get("sparse")[0]
@@ -90,7 +83,15 @@ class NodeSearchEmbeddingHyde(NodeBase):
             for item in res[0]
         ]
 
-        return {"hyde_embedding_chunks":hyde_embedding_chunks}
+        return {"hyde_embedding_chunks": hyde_embedding_chunks}
+
+
+
+
+
+
+
+
 
 
 
@@ -103,3 +104,4 @@ if __name__ == "__main__":
     node_search_embedding_hyde = NodeSearchEmbeddingHyde()
     result = node_search_embedding_hyde(init_state)
     logger.info(json_format(result))
+

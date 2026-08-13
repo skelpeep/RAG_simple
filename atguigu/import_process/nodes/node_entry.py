@@ -26,7 +26,7 @@ class NodeEntry(NodeBase):
 
         logger.info("local_file_path文件开始进行入口判断")
 
-        file_title = local_file_path_obj.name
+        file_title = local_file_path_obj.stem
         suffix = local_file_path_obj.suffix
         if suffix.lower() == ".md":
             return {

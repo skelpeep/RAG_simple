@@ -49,3 +49,9 @@ class MongoConfig:
     mongo_url = os.getenv("MONGO_URL")
     mongo_db_name = os.getenv("MONGO_DB_NAME")
 
+
+class McpConfig:
+    mcp_base_url=os.getenv("MCP_DASHSCOPE_BASE_URL")
+    api_key=os.getenv("OPENAI_API_KEY")
+
+

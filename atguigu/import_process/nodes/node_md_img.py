@@ -214,7 +214,8 @@ class NodeMDImg(NodeBase):
         new_md_path_obj,md_content = self.replace_md_image(image_with_summary_and_url_list, md_path_obj, md_content)
 
         return {
-            "md_content": md_content
+            "md_content": md_content,
+            "md_path":str(new_md_path_obj)
         }
 
 
