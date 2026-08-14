@@ -35,12 +35,12 @@ class NodeSearchEmbedding(NodeBase):
         dense_data = embeddings.get("dense")[0]
         sparse_data = embeddings.get("sparse")[0]
 
-        item_names = [
-            item.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
-            for item in item_names
-        ]
+        # item_names = [
+        #     item.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
+        #     for item in item_names
+        # ]
 
-        expr = f"item_name in {json.dumps(item_names)}"
+        expr = f"item_name in {json.dumps(item_names,ensure_ascii=False)}"
 
         reqs = create_reqs(
             dense_data=dense_data,
