@@ -81,7 +81,7 @@ class NodeMDImg(NodeBase):
         dq = deque(maxlen=30) # 双向队列
 
         llm = init_chat_model(
-            model=LLMConfig.llm_default_model,
+            model=LLMConfig.vl_model,
             model_provider="openai",
             base_url=LLMConfig.openai_api_base,
             api_key=LLMConfig.openai_api_key,

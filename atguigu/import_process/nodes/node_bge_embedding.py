@@ -31,8 +31,8 @@ class NodeBGEEmbedding(NodeBase):
                 chunk["dense_vector"] = embedding.get("dense")[idx]
                 chunk["sparse_vector"] = embedding.get("sparse")[idx]
 
-        with open(r"D:\1neiwangtong\output\hak180产品安全手册\embedding_chunks.json","w",encoding="utf-8") as f:
-            f.write(json_format(chunks))
+        # with open(r"D:\1neiwangtong\output\hak180产品安全手册\embedding_chunks.json","w",encoding="utf-8") as f:
+        #     f.write(json_format(chunks))
 
         return {
             "chunks": chunks,

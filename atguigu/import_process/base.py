@@ -1,8 +1,8 @@
-
-
+import time
 from abc import abstractmethod,ABC
 
 from atguigu.tool.logger import logger
+from atguigu.tool.task_utils import add_running_task, add_done_task, add_node_duration
 
 
 class NodeBase(ABC):
@@ -20,8 +20,16 @@ class NodeBase(ABC):
     def __call__(self, state):
         try:
             logger.info(f"{self.name}开始")
+            task_id =state.get("task_id")
+            add_running_task(task_id, self.name)
+            start_time =time.time()
+
             result =self.process(state)
             logger.info(f"{self.name}结束")
+            add_done_task(task_id, self.name)
+            end_time = time.time()
+
+            add_node_duration(task_id,self.name,end_time-start_time)
             return result
         except Exception as e:
             logger.error(f"{self.name}发生错误：{e}")

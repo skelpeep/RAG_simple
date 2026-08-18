@@ -28,11 +28,11 @@ def get_mongo_collection():
 def get_recent_history_list(session_id,limit=10):
     collection = get_mongo_collection()
     result= collection.find({"session_id":session_id}).sort("ts",-1).limit(limit)
-    print(result)
+    # print(result)
     return list(result) # 拿到的是游标对象，需要自己强转
 
 
-def add_or_update_history(session_id,role,text,rewritten_query=None,item_names=None,ts=None,_id=None):
+def add_or_update_history(session_id,role,text,rewritten_query=None,item_names=None,ts=None,_id=None,image_urls=None):
     # 封装增和改数据库写成一个方法或者函数，因为传递参数只有id不同
     collection = get_mongo_collection()
     if _id:  # 修改
@@ -43,6 +43,7 @@ def add_or_update_history(session_id,role,text,rewritten_query=None,item_names=N
             "item_names":item_names,
             "ts":ts or time.time(),
             "_id":_id,
+            "image_urls": image_urls,
             "session_id":session_id
         }
         collection.update_one({"_id":_id}, {"$set":data})
@@ -54,6 +55,7 @@ def add_or_update_history(session_id,role,text,rewritten_query=None,item_names=N
             "rewritten_query": rewritten_query,
             "item_names": item_names,
             "ts": ts or time.time(),
+            "image_urls":image_urls,
             "session_id": session_id
         }
         result =collection.insert_one(data)

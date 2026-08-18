@@ -4,7 +4,7 @@ import json
 
 from langchain.chat_models import init_chat_model
 from atguigu.config.config import LLMConfig, MilvusConfig
-from atguigu.config.prompt import ITEM_NAME_EXTRACT_SYSTEM_PROMPT, ITEM_NAME_EXTRACT_TEMPLATE
+from atguigu.config.prompt import ITEM_NAME_EXTRACT_SYSTEM_PROMPT, ITEM_NAME_EXTRACT_TEMPLATE, CHAT_CLARIFY_PROMPT
 from atguigu.query_process.base import NodeBase
 from atguigu.query_process.state import QueryGraphState
 from atguigu.tool.bgem3_client_tool import get_bge_m3_embedding
@@ -153,6 +153,29 @@ class NodeItemNameConfirm(NodeBase):
 
 
 
+    def get_chat_clarify_answer(self, history_content, original_query):
+        """
+        未识别出商品名称时，调用大模型生成一句友好的追问语，引导用户补充商品信息。
+        返回值为最终 answer，会被 handler_history 写入历史记录，实现多轮聊天。
+        """
+        llm = init_chat_model(
+            model=LLMConfig.item_model,
+            model_provider="openai",
+            api_key=LLMConfig.openai_api_key,
+            base_url=LLMConfig.openai_api_base,
+            temperature=LLMConfig.llm_default_temperature
+        )
+        messages = [{
+            "role": "user",
+            "content": CHAT_CLARIFY_PROMPT.format(
+                history_text=history_content,
+                original_query=original_query
+            )
+        }]
+        res = llm.invoke(input=messages)
+        answer = res.content.strip()
+        return answer
+
     def process(self, state: QueryGraphState):
         """
         节点逻辑
@@ -171,6 +194,11 @@ class NodeItemNameConfirm(NodeBase):
             final_search_item_names = self.get_final_search_item_names(item_names)
 
             answer, final_item_names = self.align_item_names(answer, final_item_names, final_search_item_names)
+        else:
+            # LLM 未识别出任何商品名称：调用大模型生成一句自然的追问语，
+            # 让路由走"回答"分支把追问语返回给用户，引导其补充商品信息（实现聊天功能）。
+            # 追问语随后由 handler_history 写入历史，下一轮即可结合上下文继续指代消解。
+            answer = self.get_chat_clarify_answer(history_content, original_query)
 
         message_id = self.handler_history(answer, final_item_names, message_id, rewritten_query, session_id)
 
