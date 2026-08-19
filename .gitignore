@@ -2,5 +2,7 @@
 .env.example
 .venv
 .workbuddy
+docs
+掌柜智库RAG知识库系统.xmind
 forexample
 RAG核心逻辑面试问答.md

@@ -149,6 +149,7 @@ class NodeMDImg(NodeBase):
 
         delete_image_list = [DeleteObject(obj.object_name) for obj in old_image_list]
 
+        # 检查是否有删除失败的对象，如果有，会通过error返回而不抛出异常
         errors = minio_client.remove_objects(
             bucket_name=MinIoConfig.minio_bucket_name,
             delete_object_list=delete_image_list,

@@ -56,7 +56,7 @@ class NodeRerank(NodeBase):
     def get_rerank_chunks(self, merge_docs, state):
         # 调用重排序模型，传入合并后的文档列表重排序
         rewritten_query = state.get("rewritten_query")
-        texts = [doc.get("content") for doc in merge_docs]
+        texts = [doc.get("content") if doc.get("content") else "无内容" for doc in merge_docs]
         res = text_rerank(query=rewritten_query, texts=texts, limit=len(merge_docs))
         # logger.info(json_format(res))
 
