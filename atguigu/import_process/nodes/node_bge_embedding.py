@@ -24,7 +24,13 @@ class NodeBGEEmbedding(NodeBase):
 
         for i in range(0,len(chunks),3):
             chunk_k_list = chunks[i:i+3]
-            chunk_k_content_list = [f"{chunk.get('item_name')}{chunk.get('content')}" for chunk in chunk_k_list]
+            # 拼接主体名+书名+作者+类别+正文，让向量携带更丰富的语义信息，
+            # 与检索时携带主体/书籍信息的查询对齐，提升召回准确率
+            chunk_k_content_list = [
+                f"{chunk.get('item_name') or ''}{chunk.get('book_name') or ''}"
+                f"{chunk.get('author') or ''}{chunk.get('category') or ''}{chunk.get('content')}"
+                for chunk in chunk_k_list
+            ]
 
             embedding=get_bge_m3_embedding(chunk_k_content_list)
             for idx, chunk in enumerate(chunk_k_list):

@@ -27,6 +27,6 @@ class QueryGraphState(TypedDict):
     answer: str  # 最终生成的答案
 
     # 辅助信息
-    item_names: List[str]  # 提取出的商品名称
+    item_names: List[str]  # 提取出的书籍/作者/类别/场景主体（如 刘慈欣《三体》、科幻有声书）
     rewritten_query: str  # 改写后的问题
     history: list  # 历史对话记录

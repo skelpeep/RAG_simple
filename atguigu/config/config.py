@@ -42,7 +42,7 @@ class MilvusConfig:
     milvus_url = os.getenv("MILVUS_URL")
     # 知识库切片集合名
     chunks_collection = os.getenv("CHUNKS_COLLECTION")
-    # 商品名称集合名
+    # 书籍主体集合名（存储书名/作者/内容类型/类别等主体元数据）
     item_name_collection = os.getenv("ITEM_NAME_COLLECTION")
 
 class MongoConfig:

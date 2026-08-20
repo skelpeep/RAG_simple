@@ -5,7 +5,7 @@ from pathlib import Path
 
 import fastapi
 import uvicorn
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from starlette.middleware.cors import CORSMiddleware
 
 from atguigu.config.config import MinIoConfig
@@ -30,12 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def run_main_graph(task_id:str,local_dir:str,local_file_path:str):
+def run_main_graph(task_id:str,local_dir:str,local_file_path:str,user_metadata:dict=None):
     try:
         init_state = {
             "task_id": task_id,
             "local_dir": local_dir,
-            "local_file_path": local_file_path
+            "local_file_path": local_file_path,
+            "user_metadata": user_metadata or {}
         }
         update_task_status(task_id,TASK_STATUS_PROCESSING)
         MainGraphRunner.create_and_run(init_state)
@@ -46,7 +47,15 @@ def run_main_graph(task_id:str,local_dir:str,local_file_path:str):
 
 
 @app.post("/upload")
-async def upload_file(background_tasks:BackgroundTasks,file: UploadFile = File(...,description="上传的文件")):
+async def upload_file(
+        background_tasks:BackgroundTasks,
+        file: UploadFile = File(...,description="上传的文件"),
+        book_name: str = Form("", description="书名（可选，非空则覆盖自动识别）"),
+        author: str = Form("", description="作者名（可选）"),
+        content_type: str = Form("", description="内容类型（可选）"),
+        category: str = Form("", description="类别/标签（可选）"),
+        duration: str = Form("", description="有声书时长（可选）"),
+):
     task_id = str(uuid.uuid4())
 
     add_running_task(task_id, "upload_file")
@@ -72,7 +81,22 @@ async def upload_file(background_tasks:BackgroundTasks,file: UploadFile = File(.
     # 文件已上传完成（本地 + minio），把「上传文件」节点标记为完成
     add_done_task(task_id, "upload_file")
 
-    background_tasks.add_task(run_main_graph, task_id=task_id, local_file_path=local_file_path,local_dir=local_dir)
+    # 组装用户人工指定的元数据（非空字段才会在入库时覆盖自动识别结果）
+    user_metadata = {
+        "book_name": book_name.strip(),
+        "author": author.strip(),
+        "content_type": content_type.strip(),
+        "category": category.strip(),
+        "duration": duration.strip(),
+    }
+
+    background_tasks.add_task(
+        run_main_graph,
+        task_id=task_id,
+        local_file_path=local_file_path,
+        local_dir=local_dir,
+        user_metadata=user_metadata,
+    )
 
     # 主要返回task_id，防止报错，其他的数据要和前端页面核对，前端需要但是没有我们后端就要返回
     # 如果前端已经有相关的内容了，后端就可以不返

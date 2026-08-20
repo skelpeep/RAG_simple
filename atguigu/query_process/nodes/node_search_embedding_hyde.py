@@ -77,7 +77,7 @@ class NodeSearchEmbeddingHyde(NodeBase):
             collection_name=collection_name,
             reqs=reqs,
             ranker=(0.8, 0.2),
-            output_fields=["id", "title", "file_title", "content", "item_name"],
+            output_fields=["id", "title", "file_title", "content", "item_name", "book_name", "author", "content_type", "category", "duration"],
             limit=10
         )
 

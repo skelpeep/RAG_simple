@@ -22,7 +22,6 @@ class ImportGraphState(TypedDict):
     # 内容数据
     md_content: str # Markdown 的全文内容
     chunks: list    # 切片列表
-    item_name:str # 识别主体的名称（例如：万用表）
-
-    # 数据库关联
-    embeddings_content: list # 包含向量数的列表 ，准备写入 Milvus
+    item_name: str  # 识别主体/条目名称（例如：刘慈欣《三体》）
+    book_metadata: dict  # 书籍结构化元数据：book_name书名 / author作者 / content_type内容类型 / category类别 / duration时长
+    user_metadata: dict  # 用户上传时人工指定的元数据（可选），非空字段会覆盖自动识别结果

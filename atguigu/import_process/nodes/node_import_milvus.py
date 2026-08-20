@@ -57,6 +57,26 @@ class NodeImportMilvus(NodeBase):
                 datatype=DataType.VARCHAR,
                 max_length=100
             ).add_field(
+                field_name="book_name",
+                datatype=DataType.VARCHAR,
+                max_length=200
+            ).add_field(
+                field_name="author",
+                datatype=DataType.VARCHAR,
+                max_length=100
+            ).add_field(
+                field_name="content_type",
+                datatype=DataType.VARCHAR,
+                max_length=50
+            ).add_field(
+                field_name="category",
+                datatype=DataType.VARCHAR,
+                max_length=200
+            ).add_field(
+                field_name="duration",
+                datatype=DataType.VARCHAR,
+                max_length=50
+            ).add_field(
                 field_name="part",
                 datatype=DataType.INT64
             ).add_field(

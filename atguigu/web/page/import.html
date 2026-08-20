@@ -77,6 +77,77 @@
             display: none;
         }
 
+        .metadata-panel {
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        .metadata-panel summary {
+            cursor: pointer;
+            user-select: none;
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            outline: none;
+        }
+
+        .metadata-panel summary:hover {
+            color: #38bdf8;
+        }
+
+        .metadata-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .metadata-form .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .metadata-form label {
+            font-size: 12px;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+
+        .metadata-form input,
+        .metadata-form select {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #f1f5f9;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metadata-form input::placeholder {
+            color: #475569;
+        }
+
+        .metadata-form input:focus,
+        .metadata-form select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .metadata-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 34px;
+        }
+
         .file-list {
             margin-top: 30px;
             display: flex;
@@ -389,6 +460,41 @@
         <input type="file" id="fileInput" class="file-input"  accept=".pdf,.md">
     </div>
 
+    <details class="metadata-panel" open>
+        <summary>📚 书籍元数据（可选，留空则自动识别）</summary>
+        <div class="metadata-form">
+            <div class="field">
+                <label>书名</label>
+                <input id="bookName" placeholder="如：三体">
+            </div>
+            <div class="field">
+                <label>作者名</label>
+                <input id="author" placeholder="如：刘慈欣">
+            </div>
+            <div class="field">
+                <label>内容类型</label>
+                <select id="contentType">
+                    <option value="">自动识别</option>
+                    <option>有声书信息</option>
+                    <option>书籍简介</option>
+                    <option>作者介绍</option>
+                    <option>听书笔记</option>
+                    <option>推荐运营资料</option>
+                    <option>用户评论摘要</option>
+                    <option>常见问答</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>类别/标签</label>
+                <input id="category" placeholder="如：科幻，悬疑">
+            </div>
+            <div class="field">
+                <label>有声书时长</label>
+                <input id="duration" placeholder="如：50小时">
+            </div>
+        </div>
+    </details>
+
     <div id="fileList" class="file-list">
     </div>
 </div>
@@ -483,6 +589,18 @@
 
         const formData = new FormData();
         formData.append('file', file);
+
+        // 读取（可选的）书籍元数据，随文件一起提交；留空则由后端 LLM 自动识别
+        const metadata = {
+            book_name: document.getElementById('bookName').value.trim(),
+            author: document.getElementById('author').value.trim(),
+            content_type: document.getElementById('contentType').value.trim(),
+            category: document.getElementById('category').value.trim(),
+            duration: document.getElementById('duration').value.trim(),
+        };
+        for (const [key, value] of Object.entries(metadata)) {
+            formData.append(key, value);
+        }
 
         try {
             progressWrapper.style.display = 'block';

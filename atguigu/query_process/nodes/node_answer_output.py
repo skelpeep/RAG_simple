@@ -44,7 +44,18 @@ class NodeAnswerOutput(NodeBase):
             content = chunk.get("content")
             url = chunk.get("url")
             source = chunk.get("source")
-            content = f"[{idx}][{source}][{title}][{url}]\n{content}\n\n"
+            book_name = chunk.get("book_name") or ""
+            author = chunk.get("author") or ""
+            content_type = chunk.get("content_type") or ""
+            file_title = chunk.get("file_title") or ""
+            # 拼装溯源行：序号 + 来源 + 来源文件 + 条目名 + 内容类型 + 链接，并附带书名/作者元数据
+            meta_parts = []
+            if book_name:
+                meta_parts.append(f"书名:{book_name}")
+            if author:
+                meta_parts.append(f"作者:{author}")
+            meta_str = " ".join(meta_parts)
+            content = f"[{idx}][来源:{source}][来源文件:{file_title}][条目:{title}][内容类型:{content_type}][{url}]\n{meta_str}\n{content}\n\n"
             chunk_content += content
         history = state.get("history")
         history_content = ""

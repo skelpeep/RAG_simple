@@ -16,7 +16,7 @@ from atguigu.tool.mongo_client_tool import add_or_update_history, get_recent_his
 
 class NodeItemNameConfirm(NodeBase):
     """
-    节点功能：确认用户问题中的核心商品名称。
+    节点功能：确认用户问题中的核心书籍/主体名称。
     """
 
     # 覆盖基类的 name 属性，标识节点名称
@@ -48,10 +48,10 @@ class NodeItemNameConfirm(NodeBase):
             answer = ""
         elif option_item_name:
             final_item_names = []
-            answer = f"请确认你要咨询的商品是哪一个？{','.join(option_item_name)}"
+            answer = f"请确认你想了解哪本书？{','.join(option_item_name)}"
         else:
             final_item_names = []
-            answer = "无法识别商品名称，请重新输入。"
+            answer = "无法识别书籍名称，请重新输入。"
         return answer, final_item_names
 
     def get_final_search_item_names(self, item_names):
@@ -77,8 +77,6 @@ class NodeItemNameConfirm(NodeBase):
                 limit=10,
                 output_fields=["item_name"]
             )
-            print(json_format(res))
-            print(res[0])
 
             search_item_names = [
                 {
@@ -89,11 +87,9 @@ class NodeItemNameConfirm(NodeBase):
                 for item in res[0]
             ]
             final_search_item_names.extend(search_item_names)
-            # print(final_search_item_names)
         return final_search_item_names
 
     def get_item_names(self, history_content, original_query):
-        print(history_content)
         # 整理数据后就可以调大模型
         llm = init_chat_model(
             model=LLMConfig.item_model,
@@ -108,14 +104,20 @@ class NodeItemNameConfirm(NodeBase):
                                                                                  original_query=original_query)}]
 
         res = llm.invoke(message)
-        # print(res.content)
         # 对大模型的输出信息进行整理判断
         res_json = res.content
         # 大模型返回json有概率输出json的md代码块，需要去掉```json和```
         if res_json.startswith("```json"):
             res_json = res_json.replace("```json", "").replace("```", "")
+        elif res_json.startswith("```"):
+            res_json = res_json.replace("```", "")
+        res_json = res_json.strip()
         # 把json转字典，取出item_name判断，有值就取出所有item_name的空白
-        res_dict = json.loads(res_json)
+        try:
+            res_dict = json.loads(res_json)
+        except Exception as e:
+            logger.error(f"解析书籍主体JSON失败：{e}，原始输出：{res_json}")
+            res_dict = {}
         item_names = res_dict.get("item_names")
         rewritten_query = res_dict.get("rewritten_query")
         if item_names:
@@ -155,7 +157,7 @@ class NodeItemNameConfirm(NodeBase):
 
     def get_chat_clarify_answer(self, history_content, original_query):
         """
-        未识别出商品名称时，调用大模型生成一句友好的追问语，引导用户补充商品信息。
+        未识别出书籍/主体名称时，调用大模型生成一句友好的追问语，引导用户补充书籍信息。
         返回值为最终 answer，会被 handler_history 写入历史记录，实现多轮聊天。
         """
         llm = init_chat_model(
@@ -195,8 +197,8 @@ class NodeItemNameConfirm(NodeBase):
 
             answer, final_item_names = self.align_item_names(answer, final_item_names, final_search_item_names)
         else:
-            # LLM 未识别出任何商品名称：调用大模型生成一句自然的追问语，
-            # 让路由走"回答"分支把追问语返回给用户，引导其补充商品信息（实现聊天功能）。
+            # LLM 未识别出任何书籍/主体名称：调用大模型生成一句自然的追问语，
+            # 让路由走"回答"分支把追问语返回给用户，引导其补充书籍信息（实现聊天功能）。
             # 追问语随后由 handler_history 写入历史，下一轮即可结合上下文继续指代消解。
             answer = self.get_chat_clarify_answer(history_content, original_query)
 
