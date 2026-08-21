@@ -23,17 +23,17 @@ class NodeItemNameConfirm(NodeBase):
     name: str = "node_item_name_confirm"
 
     def handler_history(self, answer, final_item_names, message_id, rewritten_query, session_id):
-        # 有answer，要添加新的历史记录
-        # 没有answer，不需要添加新的历史记录
-        # 不管有没有answer都要给历史记录回填item_names和rewritten_query
+        # message_id 传入时是「当前轮 user 消息」的 id
+        user_message_id = message_id
+        assistant_message_id = None
         if answer:
-            message_id = add_or_update_history(session_id, role="assistant", text=answer)
-        # 回填数据,给历史记录最近的n条回填，再找最近的n条历史记录
-        history_list = get_recent_history_list(session_id, limit=10)
-        ids = [history.get("_id") for history in history_list]
+            assistant_message_id = add_or_update_history(session_id, role="assistant", text=answer)
+        # 只回填「当前轮」的 user 消息和（若存在的）assistant 消息的主体信息，
+        # 不要回填到历史所有消息，避免覆盖之前轮次已识别的主体
+        ids = [i for i in (user_message_id, assistant_message_id) if i]
         if ids:
             update_item_names_and_query(ids, final_item_names, rewritten_query)
-        return message_id
+        return assistant_message_id or user_message_id
 
     def align_item_names(self, answer, final_item_names, final_search_item_names, item_names):
         confirm_item_names = [item.get("search_item_name") for item in final_search_item_names if

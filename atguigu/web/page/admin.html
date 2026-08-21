@@ -6,140 +6,202 @@
     <title>智能听书知识库 · 管理后台</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --panel: rgba(30, 41, 59, 0.7);
-            --panel2: rgba(15, 23, 42, 0.6);
-            --text: #e2e8f0;
-            --muted: #94a3b8;
-            --brand: #38bdf8;
-            --brand2: #818cf8;
-            --border: rgba(255, 255, 255, 0.1);
-            --green: #10b981;
-            --red: #ef4444;
-            --amber: #f59e0b;
+            --bg-0: #120c08;
+            --bg-1: #1a130d;
+            --panel: rgba(42, 32, 24, 0.66);
+            --panel-2: rgba(24, 18, 13, 0.72);
+            --text: #f6eddd;
+            --text-2: #eadfc8;
+            --muted: #a99681;
+            --gold-1: #f7d488;
+            --gold-2: #e6b456;
+            --gold-3: #c98a3a;
+            --accent: #d97a56;
+            --gold-grad: linear-gradient(135deg, #f7d488 0%, #e6b456 48%, #c98a3a 100%);
+            --border: rgba(246, 237, 221, 0.08);
+            --border-strong: rgba(246, 237, 221, 0.14);
+            --border-gold: rgba(230, 180, 86, 0.32);
+            --green: #34d399;
+            --red: #f87171;
+            --amber: #fbbf24;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.28);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.38);
+            --shadow-lg: 0 28px 70px -14px rgba(0, 0, 0, 0.62);
+            --glow-gold: 0 0 26px rgba(230, 180, 86, 0.30);
         }
 
         * { box-sizing: border-box; }
 
         body {
             margin: 0;
-            font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, Arial, sans-serif;
-            background-color: #0f172a;
-            background-image: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 85% 30%, rgba(129, 140, 248, 0.08) 0%, transparent 50%),
-            linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            font-family: "PingFang SC", "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, Arial, sans-serif;
             color: var(--text);
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px;
+            background-color: var(--bg-1);
+            background-image:
+                radial-gradient(1200px 600px at 12% -8%, rgba(247, 212, 136, 0.14), transparent 55%),
+                radial-gradient(1000px 520px at 92% 4%, rgba(201, 138, 58, 0.13), transparent 52%),
+                radial-gradient(900px 700px at 50% 116%, rgba(217, 122, 86, 0.10), transparent 55%),
+                linear-gradient(to right, rgba(246, 237, 221, 0.022) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(246, 237, 221, 0.022) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 46px 46px, 46px 46px;
         }
 
-        .wrap { max-width: 1200px; margin: 0 auto; }
+        .wrap { max-width: 1220px; margin: 0 auto; }
 
+        /* ===== 顶栏 ===== */
         .topbar {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 16px 20px;
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            padding: 18px 22px;
+            border: 1px solid var(--border-strong);
+            border-radius: 18px;
             background: var(--panel);
-            backdrop-filter: blur(10px);
-            margin-bottom: 16px;
+            backdrop-filter: blur(18px) saturate(1.1);
+            -webkit-backdrop-filter: blur(18px) saturate(1.1);
+            box-shadow: var(--shadow-md), inset 0 1px 0 rgba(246, 237, 221, 0.06);
+            margin-bottom: 18px;
+            position: relative;
+        }
+        .topbar::after {
+            content: "";
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            bottom: -1px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold-2), transparent);
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            background: linear-gradient(150deg, rgba(247, 212, 136, 0.22), rgba(201, 138, 58, 0.12));
+            border: 1px solid var(--border-gold);
+            box-shadow: var(--glow-gold), inset 0 1px 0 rgba(246, 237, 221, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
         }
 
-        .title { line-height: 1.15; }
-        .title strong { font-size: 16px; display: block; }
-        .title span { font-size: 12px; color: var(--muted); }
-
-        .top-actions { margin-left: auto; display: flex; gap: 10px; }
-
-        .btn {
-            border: none;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            color: #fff;
-            padding: 9px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: opacity .2s, transform .1s;
-        }
-        .btn:hover { opacity: .9; }
-        .btn:active { transform: translateY(1px); }
-        .btn.ghost {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border);
-            color: var(--muted);
-        }
-        .btn.danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-            margin-bottom: 16px;
-        }
-        .stat-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px 18px;
-            backdrop-filter: blur(10px);
-        }
-        .stat-card .num {
-            font-size: 30px;
+        .title { line-height: 1.25; }
+        .title strong {
+            display: block;
+            font-size: 17px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #fdf3dd, #e6b456);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .stat-card .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
-        .stat-card .dist { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .title span { font-size: 12px; color: var(--muted); letter-spacing: 0.4px; }
+
+        .top-actions { margin-left: auto; display: flex; gap: 10px; }
+
+        .btn {
+            border: 1px solid var(--border-strong);
+            background: var(--gold-grad);
+            color: #3a2812;
+            padding: 10px 18px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .22s ease;
+            font-family: inherit;
+            box-shadow: 0 0 16px rgba(230, 180, 86, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+        .btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 0 22px rgba(230, 180, 86, 0.38); }
+        .btn.ghost {
+            background: rgba(230, 180, 86, 0.08);
+            border: 1px solid var(--border-strong);
+            color: var(--gold-2);
+            box-shadow: none;
+        }
+        .btn.ghost:hover { background: rgba(230, 180, 86, 0.16); border-color: var(--border-gold); box-shadow: none; }
+        .btn.danger { background: linear-gradient(135deg, #f87171, #dc2626); color: #fff; box-shadow: 0 0 16px rgba(220, 38, 38, 0.3); }
+
+        /* ===== 统计卡片 ===== */
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 18px; }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            padding: 20px 22px;
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow-sm);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(280px 100px at 50% 0%, rgba(230, 180, 86, 0.08), transparent 70%);
+            opacity: 0;
+            transition: opacity .25s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-gold); }
+        .stat-card:hover::before { opacity: 1; }
+
+        .stat-card .num {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.1;
+            background: var(--gold-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .stat-card .label { font-size: 13px; color: var(--muted); margin-top: 6px; letter-spacing: 0.3px; }
+        .stat-card .dist { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 7px; }
+
         .chip {
             font-size: 12px;
-            color: var(--brand);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            background: rgba(56, 189, 248, 0.08);
-            padding: 3px 9px;
+            color: #e8d5ab;
+            border: 1px solid var(--border-gold);
+            background: rgba(230, 180, 86, 0.08);
+            padding: 4px 11px;
             border-radius: 999px;
         }
 
-        .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+        /* ===== 标签页 ===== */
+        .tabs { display: flex; gap: 10px; margin-bottom: 16px; }
         .tab {
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 11px 24px;
+            border-radius: 12px;
             font-size: 14px;
             cursor: pointer;
             color: var(--muted);
-            border: 1px solid var(--border);
-            background: var(--panel2);
-            transition: all .2s;
+            border: 1px solid var(--border-strong);
+            background: var(--panel-2);
+            transition: all .22s ease;
+            user-select: none;
         }
+        .tab:hover { border-color: var(--border-gold); color: var(--gold-2); }
         .tab.active {
-            color: #fff;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
+            color: #3a2812;
+            background: var(--gold-grad);
             border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 0 18px rgba(230, 180, 86, 0.3);
         }
 
+        /* ===== 面板 ===== */
         .panel {
             background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-strong);
+            border-radius: 18px;
+            backdrop-filter: blur(14px);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
         }
 
@@ -147,72 +209,89 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            padding: 14px 16px;
+            padding: 16px 18px;
             border-bottom: 1px solid var(--border);
             align-items: center;
+            background: rgba(18, 12, 8, 0.22);
         }
         .filters input, .filters select {
-            background: var(--panel2);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            padding: 9px 12px;
-            color: #f1f5f9;
+            background: rgba(18, 12, 8, 0.6);
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 10px 13px;
+            color: var(--text);
             font-size: 13px;
             outline: none;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
         }
-        .filters input:focus, .filters select:focus {
-            border-color: rgba(56, 189, 248, 0.6);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
-        }
-        .filters input::placeholder { color: #475569; }
-        .filters .kw { flex: 1; min-width: 180px; }
+        .filters input:focus, .filters select:focus { border-color: rgba(230, 180, 86, 0.6); box-shadow: 0 0 0 3px rgba(230, 180, 86, 0.12); }
+        .filters input::placeholder { color: #7c6c59; }
+        .filters .kw { flex: 1; min-width: 200px; }
 
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); vertical-align: top; }
-        th { color: var(--muted); font-weight: 600; font-size: 12px; letter-spacing: .3px; white-space: nowrap; }
-        tr:hover td { background: rgba(56, 189, 248, 0.04); }
+        th, td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        th {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: .5px;
+            white-space: nowrap;
+            background: rgba(18, 12, 8, 0.28);
+        }
+        tr { transition: background .18s ease; }
+        tr:hover td { background: rgba(230, 180, 86, 0.05); }
         td.muted { color: var(--muted); }
-        .content-cell { max-width: 420px; color: #cbd5e1; line-height: 1.5; }
+        .content-cell { max-width: 420px; color: var(--text-2); line-height: 1.6; }
         .content-cell .clip { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .row-actions { display: flex; gap: 6px; white-space: nowrap; }
+        .row-actions { display: flex; gap: 7px; white-space: nowrap; }
         .link-btn {
             background: none;
-            border: 1px solid var(--border);
-            color: var(--brand);
-            padding: 4px 10px;
-            border-radius: 7px;
+            border: 1px solid var(--border-strong);
+            color: var(--gold-2);
+            padding: 5px 12px;
+            border-radius: 8px;
             font-size: 12px;
             cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
         }
-        .link-btn.danger { color: var(--red); border-color: rgba(239, 68, 68, 0.4); }
+        .link-btn:hover { background: rgba(230, 180, 86, 0.12); border-color: var(--border-gold); }
+        .link-btn.danger { color: var(--red); border-color: rgba(248, 113, 113, 0.35); }
+        .link-btn.danger:hover { background: rgba(248, 113, 113, 0.12); border-color: rgba(248, 113, 113, 0.6); }
 
-        .empty { padding: 48px 20px; text-align: center; color: var(--muted); }
+        .empty { padding: 56px 20px; text-align: center; color: var(--muted); }
 
         .pager {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border-top: 1px solid var(--border);
             font-size: 13px;
             color: var(--muted);
         }
         .pager button {
-            background: var(--panel2);
-            border: 1px solid var(--border);
-            color: var(--muted);
-            padding: 6px 12px;
-            border-radius: 8px;
+            background: var(--panel-2);
+            border: 1px solid var(--border-strong);
+            color: var(--text-2);
+            padding: 7px 14px;
+            border-radius: 9px;
             cursor: pointer;
+            transition: all .2s;
+            font-family: inherit;
         }
+        .pager button:hover:not(:disabled) { border-color: var(--border-gold); color: var(--gold-2); }
         .pager button:disabled { opacity: .4; cursor: not-allowed; }
         .pager .info { margin-left: auto; }
 
+        /* ===== 弹窗 ===== */
         .modal-mask {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -220,55 +299,69 @@
         }
         .modal-mask.show { display: flex; }
         .modal {
-            width: 480px;
+            width: 500px;
             max-width: 92vw;
-            background: #1e293b;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            background: rgba(42, 32, 24, 0.96);
+            border: 1px solid var(--border-strong);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: var(--shadow-lg);
+            animation: popIn .25s ease;
         }
-        .modal h3 { margin: 0 0 16px; font-size: 16px; }
+        @keyframes popIn { from { opacity: 0; transform: scale(.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal h3 { margin: 0 0 18px; font-size: 17px; font-weight: 700; background: linear-gradient(135deg, #fdf3dd, #e6b456); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .modal .field { margin-bottom: 14px; }
         .modal label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
         .modal input, .modal select {
             width: 100%;
-            background: var(--panel2);
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            padding: 10px 12px;
-            color: #f1f5f9;
+            background: rgba(18, 12, 8, 0.6);
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 11px 13px;
+            color: var(--text);
             font-size: 14px;
             outline: none;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
         }
-        .modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+        .modal input:focus, .modal select:focus { border-color: rgba(230, 180, 86, 0.6); box-shadow: 0 0 0 3px rgba(230, 180, 86, 0.12); }
+        .modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
+        /* ===== 提示 ===== */
         .toast {
             position: fixed;
-            top: 22px;
+            top: 24px;
             left: 50%;
             transform: translateX(-50%) translateY(-20px);
-            background: #1e293b;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 11px 18px;
+            background: rgba(42, 32, 24, 0.96);
+            border: 1px solid var(--border-strong);
+            border-radius: 12px;
+            padding: 12px 20px;
             font-size: 13px;
-            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--shadow-md);
             opacity: 0;
-            transition: all .25s;
+            transition: all .28s ease;
             z-index: 100;
             max-width: 90vw;
+            backdrop-filter: blur(10px);
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.ok { border-color: rgba(16, 185, 129, 0.5); color: #d1fae5; }
-        .toast.err { border-color: rgba(239, 68, 68, 0.5); color: #fecaca; }
-        .toast.warn { border-color: rgba(245, 158, 11, 0.5); color: #fde68a; }
+        .toast.ok { border-color: rgba(52, 211, 153, 0.5); color: #a9e8c4; }
+        .toast.err { border-color: rgba(248, 113, 113, 0.5); color: #fecaca; }
+        .toast.warn { border-color: rgba(251, 191, 36, 0.5); color: #fde68a; }
     </style>
 </head>
 <body>
 <div class="wrap">
     <div class="topbar">
-        <div class="logo">📚</div>
+        <div class="logo">
+            <svg width="27" height="27" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 5.4A2.4 2.4 0 0 1 6.4 3H11v15.6H6.4A2.4 2.4 0 0 0 4 21V5.4z" fill="#f7d488"/>
+                <path d="M20 5.4A2.4 2.4 0 0 0 17.6 3H13v15.6h4.6A2.4 2.4 0 0 1 20 21V5.4z" fill="#e6b456"/>
+                <path d="M12 3v15.6" stroke="#c98a3a" stroke-width="1.1"/>
+                <path d="M7 6.8h2.3M7 9.4h2.3" stroke="#c98a3a" stroke-width="0.9" stroke-linecap="round"/>
+            </svg>
+        </div>
         <div class="title">
             <strong>智能听书知识库 · 管理后台</strong>
             <span id="subTitle">书籍资料管理 &amp; 知识库内容管理</span>
@@ -368,16 +461,12 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    // 后端管理服务地址（port 8002）：
-    // - 通过 http://127.0.0.1:8002/ 打开时走同源相对路径；
-    // - 通过 PyCharm 内置预览（如 63342）或 file:// 直接打开时，自动回退到 8002 后端。
     const ADMIN_ORIGIN = (location.port === '8002') ? '' : 'http://127.0.0.1:8002';
     const API_BASE = ADMIN_ORIGIN;
     const CONTENT_TYPES = ['有声书信息', '书籍简介', '作者介绍', '听书笔记', '推荐运营资料', '用户评论摘要', '常见问答'];
 
     const state = { tab: 'books', booksPage: 0, chunksPage: 0, pageSize: 20 };
 
-    // ---------- 工具 ----------
     function escapeHtml(str) {
         return String(str ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
             .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
@@ -415,7 +504,6 @@
         selectEl.value = cur;
     }
 
-    // ---------- 统计 ----------
     async function loadStats() {
         try {
             const d = await api('/api/stats');
@@ -434,7 +522,6 @@
         }
     }
 
-    // ---------- 书籍管理 ----------
     async function loadBooks() {
         const kw = document.getElementById('bookKw').value.trim();
         const ct = document.getElementById('bookType').value;
@@ -464,8 +551,8 @@
                 <td>${escapeHtml(b.category) || '<span class="muted">-</span>'}</td>
                 <td class="muted">${escapeHtml(b.file_title)}</td>
                 <td><div class="row-actions">
-                    <button class="link-btn" onclick="openEdit(${b.id})">编辑</button>
-                    <button class="link-btn danger" onclick="deleteBook(${b.id})">删除</button>
+                    <button class="link-btn" onclick="openEdit('${b.id}')">编辑</button>
+                    <button class="link-btn danger" onclick="deleteBook('${b.id}')">删除</button>
                 </div></td>
             </tr>`;
         }
@@ -492,7 +579,6 @@
         }
     }
 
-    // ---------- 编辑 ----------
     function openEdit(id) {
         api('/api/books/' + id).then(d => {
             if (!d.ok) { toast(d.msg, 'err'); return; }
@@ -544,7 +630,6 @@
         }
     }
 
-    // ---------- 知识库管理 ----------
     async function loadChunks() {
         const qs = new URLSearchParams({
             keyword: document.getElementById('chunkKw').value.trim(),
@@ -579,7 +664,7 @@
                 <td>${escapeHtml(c.duration) || '<span class="muted">-</span>'}</td>
                 <td class="muted">${escapeHtml(c.file_title)}</td>
                 <td class="content-cell"><div class="clip" title="${escapeHtml(c.content)}">${escapeHtml(c.content)}</div></td>
-                <td><div class="row-actions"><button class="link-btn danger" onclick="deleteChunk(${c.id})">删除</button></div></td>
+                <td><div class="row-actions"><button class="link-btn danger" onclick="deleteChunk('${c.id}')">删除</button></div></td>
             </tr>`;
         }
         html += '</tbody></table>';
@@ -631,7 +716,6 @@
         }
     }
 
-    // ---------- 分页 ----------
     function renderPager(elId, total, page, onChange) {
         const el = document.getElementById(elId);
         const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
@@ -645,7 +729,6 @@
         next.onclick = () => { if (page + 1 < totalPages) onChange(page + 1); };
     }
 
-    // ---------- tab 切换 ----------
     function switchTab(tab) {
         state.tab = tab;
         document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
@@ -655,7 +738,6 @@
         else loadChunks();
     }
 
-    // ---------- 初始化 ----------
     document.getElementById('btnRefresh').onclick = () => { loadStats(); state.tab === 'books' ? loadBooks() : loadChunks(); };
     document.getElementById('btnGoImport').onclick = () => { window.open(ADMIN_ORIGIN + '/page/import.html', '_blank'); };
 

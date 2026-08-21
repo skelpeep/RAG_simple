@@ -5,679 +5,530 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文件导入服务</title>
     <style>
+        :root {
+            --bg-0: #120c08;
+            --bg-1: #1a130d;
+            --panel: rgba(42, 32, 24, 0.66);
+            --panel-2: rgba(24, 18, 13, 0.72);
+            --text: #f6eddd;
+            --text-2: #eadfc8;
+            --muted: #a99681;
+            --gold-1: #f7d488;
+            --gold-2: #e6b456;
+            --gold-3: #c98a3a;
+            --accent: #d97a56;
+            --gold-grad: linear-gradient(135deg, #f7d488 0%, #e6b456 48%, #c98a3a 100%);
+            --border: rgba(246, 237, 221, 0.08);
+            --border-strong: rgba(246, 237, 221, 0.14);
+            --border-gold: rgba(230, 180, 86, 0.32);
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.28);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.38);
+            --shadow-lg: 0 28px 70px -14px rgba(0, 0, 0, 0.62);
+            --glow-gold: 0 0 26px rgba(230, 180, 86, 0.30);
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "PingFang SC", "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 24px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            /* 科技感背景 */
-            background-color: #0f172a;
-            background-image: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 85% 30%, rgba(129, 140, 248, 0.08) 0%, transparent 50%),
-            linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            background-color: var(--bg-1);
+            background-image:
+                radial-gradient(1200px 600px at 12% -8%, rgba(247, 212, 136, 0.14), transparent 55%),
+                radial-gradient(1000px 520px at 92% 4%, rgba(201, 138, 58, 0.13), transparent 52%),
+                radial-gradient(900px 700px at 50% 116%, rgba(217, 122, 86, 0.10), transparent 55%),
+                linear-gradient(to right, rgba(246, 237, 221, 0.022) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(246, 237, 221, 0.022) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 46px 46px, 46px 46px;
         }
 
         .container {
             width: 100%;
-            max-width: 800px;
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            color: #e2e8f0;
+            max-width: 840px;
+            background: var(--panel);
+            backdrop-filter: blur(18px) saturate(1.1);
+            -webkit-backdrop-filter: blur(18px) saturate(1.1);
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-strong);
+            box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(246, 237, 221, 0.06);
+            color: var(--text);
         }
 
-        h1 {
-            color: #f8fafc;
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 600;
+        .page-head { text-align: center; margin-bottom: 26px; }
+        .page-head .logo {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 12px;
+            border-radius: 15px;
+            background: linear-gradient(150deg, rgba(247, 212, 136, 0.22), rgba(201, 138, 58, 0.12));
+            border: 1px solid var(--border-gold);
+            box-shadow: var(--glow-gold), inset 0 1px 0 rgba(246, 237, 221, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-head h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
             letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            background: linear-gradient(135deg, #fdf3dd, #e6b456);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
+        .page-head .sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
 
+        /* ===== 上传区 ===== */
         .upload-area {
-            border: 2px dashed rgba(56, 189, 248, 0.4);
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 12px;
-            padding: 40px;
+            border: 2px dashed rgba(230, 180, 86, 0.38);
+            background: rgba(24, 18, 13, 0.45);
+            border-radius: var(--radius-md);
+            padding: 36px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all .25s ease;
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
         }
-
-        .upload-area:hover {
-            border-color: #38bdf8;
-            background: rgba(56, 189, 248, 0.05);
-            box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.1);
+        .upload-area::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(300px 120px at 50% 0%, rgba(230, 180, 86, 0.10), transparent 70%);
+            opacity: 0;
+            transition: opacity .25s;
         }
+        .upload-area:hover { border-color: var(--gold-2); box-shadow: var(--glow-gold), inset 0 0 30px rgba(230, 180, 86, 0.06); transform: translateY(-1px); }
+        .upload-area:hover::before { opacity: 1; }
+        .upload-icon { font-size: 42px; margin-bottom: 12px; filter: drop-shadow(0 0 12px rgba(230, 180, 86, 0.5)); }
+        .upload-text { color: var(--text-2); font-size: 15px; }
+        .upload-hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+        .file-input { display: none; }
 
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+        /* ===== 待导入队列 ===== */
+        .pending-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+        .pending-list:empty { display: none; }
+
+        .pending-item {
+            background: rgba(24, 18, 13, 0.55);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: border-color .2s ease, box-shadow .2s ease;
         }
+        .pending-item:hover { border-color: var(--border-gold); box-shadow: var(--shadow-md); }
 
-        .upload-text {
-            color: #94a3b8;
-            font-size: 16px;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .metadata-panel {
-            margin-bottom: 20px;
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 14px 18px;
-        }
-
-        .metadata-panel summary {
-            cursor: pointer;
-            user-select: none;
-            color: #e2e8f0;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 0.3px;
-            outline: none;
-        }
-
-        .metadata-panel summary:hover {
-            color: #38bdf8;
-        }
-
-        .metadata-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .metadata-form .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .metadata-form label {
-            font-size: 12px;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-        }
-
-        .metadata-form input,
-        .metadata-form select {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 10px 12px;
-            color: #f1f5f9;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .metadata-form input::placeholder {
-            color: #475569;
-        }
-
-        .metadata-form input:focus,
-        .metadata-form select:focus {
-            border-color: #38bdf8;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
-        }
-
-        .metadata-form select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 34px;
-        }
-
-        .cover-panel {
-            margin-bottom: 20px;
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 14px 18px;
-        }
-
-        .cover-title {
-            color: #e2e8f0;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 0.3px;
-            margin-bottom: 10px;
-        }
-
-        .cover-body {
+        .p-head {
             display: flex;
             align-items: center;
             gap: 12px;
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(18, 12, 8, 0.25);
         }
+        .p-name { font-weight: 600; color: var(--text); font-size: 14.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .p-size { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+        .p-remove {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 15px;
+            padding: 5px 8px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            transition: all .2s;
+        }
+        .p-remove:hover { color: #ef9a72; background: rgba(217, 122, 86, 0.12); }
 
-        .cover-drop {
-            width: 120px;
-            height: 120px;
-            border: 2px dashed rgba(56, 189, 248, 0.4);
-            border-radius: 10px;
+        .p-body { padding: 14px 18px; display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+
+        .p-cover { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; flex-shrink: 0; }
+        .p-cover-label { font-size: 12px; color: var(--muted); }
+
+        .p-cover-box {
+            width: 88px;
+            height: 88px;
+            border: 2px dashed rgba(230, 180, 86, 0.38);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #94a3b8;
+            color: var(--muted);
             font-size: 12px;
             text-align: center;
             overflow: hidden;
-            background: rgba(15, 23, 42, 0.5);
-            transition: all 0.3s ease;
+            background: rgba(18, 12, 8, 0.5);
+            transition: all .2s ease;
         }
+        .p-cover-box:hover { border-color: var(--gold-2); box-shadow: var(--glow-gold); }
+        .p-cover-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        .cover-drop:hover {
-            border-color: #38bdf8;
-            background: rgba(56, 189, 248, 0.05);
-            box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.1);
-        }
-
-        .cover-drop img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .cover-clear {
-            background: rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.4);
+        .p-cover-clear {
+            background: rgba(217, 122, 86, 0.10);
+            border: 1px solid rgba(217, 122, 86, 0.4);
+            color: var(--accent);
             border-radius: 8px;
-            padding: 8px 14px;
+            padding: 5px 11px;
             cursor: pointer;
+            font-size: 12px;
+            transition: all .2s;
+        }
+        .p-cover-clear:hover { background: rgba(217, 122, 86, 0.2); }
+
+        .p-meta { flex: 1; min-width: 260px; }
+        .p-meta summary { cursor: pointer; user-select: none; color: var(--text-2); font-size: 13px; outline: none; }
+        .p-meta summary:hover { color: var(--gold-2); }
+
+        .p-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .p-meta-grid input, .p-meta-grid select {
+            background: rgba(18, 12, 8, 0.62);
+            border: 1px solid var(--border-strong);
+            border-radius: 9px;
+            padding: 10px 12px;
+            color: var(--text);
             font-size: 13px;
-            transition: all 0.2s ease;
+            outline: none;
+            font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
         }
+        .p-meta-grid input::placeholder { color: #7c6c59; }
+        .p-meta-grid input:focus, .p-meta-grid select:focus { border-color: rgba(230, 180, 86, 0.6); box-shadow: 0 0 0 3px rgba(230, 180, 86, 0.12); }
 
-        .cover-clear:hover {
-            background: rgba(239, 68, 68, 0.25);
-        }
+        /* ===== 提交栏 ===== */
+        .submit-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
 
-        .file-list {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .submit-btn {
+            border: none;
+            background: var(--gold-grad);
+            color: #3a2812;
+            padding: 13px 34px;
+            border-radius: 13px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            box-shadow: 0 0 22px rgba(230, 180, 86, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transition: all .22s ease;
+            font-family: inherit;
         }
+        .submit-btn:hover:not(:disabled) { filter: brightness(1.06); box-shadow: 0 0 30px rgba(230, 180, 86, 0.46); transform: translateY(-1px); }
+        .submit-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+        .submit-hint { font-size: 13px; color: var(--muted); }
+
+        /* ===== 上传进度列表 ===== */
+        .file-list { display: flex; flex-direction: column; gap: 16px; }
 
         .file-item {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            background: rgba(24, 18, 13, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s;
         }
+        .file-item:hover { border-color: var(--border-gold); box-shadow: var(--shadow-md); }
 
-        .file-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            border-color: rgba(56, 189, 248, 0.3);
-        }
-
-        .file-info {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            margin-right: 20px;
-        }
-
-        .file-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .file-name {
-            font-weight: 600;
-            color: #f1f5f9;
-            font-size: 16px;
-        }
-
-        .file-size {
-            font-size: 13px;
-            color: #64748b;
-        }
+        .file-info { display: flex; flex-direction: column; flex: 1; margin-right: 20px; }
+        .file-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .file-name { font-weight: 600; color: var(--text); font-size: 15px; }
+        .file-size { font-size: 12px; color: var(--muted); }
 
         .status-badge {
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 7px 16px;
+            border-radius: 999px;
             font-size: 13px;
             font-weight: 600;
-            color: white;
-            min-width: 80px;
+            color: #fff;
+            min-width: 82px;
             text-align: center;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
         }
+        .status-uploading { background: linear-gradient(135deg, #f0a83a, #d97706); box-shadow: 0 6px 16px -4px rgba(217, 119, 6, 0.6); }
+        .status-processing { background: linear-gradient(135deg, #60a5fa, #2563eb); box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.6); }
+        .status-completed { background: linear-gradient(135deg, #34d399, #059669); box-shadow: 0 6px 16px -4px rgba(5, 150, 105, 0.6); }
+        .status-error { background: linear-gradient(135deg, #f87171, #dc2626); box-shadow: 0 6px 16px -4px rgba(220, 38, 38, 0.6); }
 
-        .status-uploading {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .status-processing {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-
-        .status-completed {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .status-error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .progress-wrapper {
-            margin-top: 8px;
-            display: none;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background-color: rgba(15, 23, 42, 0.8);
-            border-radius: 3px;
-            overflow: hidden;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            border-radius: 3px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-bar::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(
-                    90deg,
-                    rgba(255, 255, 255, 0) 0%,
-                    rgba(255, 255, 255, 0.2) 50%,
-                    rgba(255, 255, 255, 0) 100%
-            );
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        .progress-text {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 6px;
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
+        .progress-wrapper { margin-top: 10px; display: none; }
+        .progress-bar-container { width: 100%; height: 7px; background-color: rgba(18, 12, 8, 0.85); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5); }
+        .progress-bar { height: 100%; width: 0%; border-radius: 4px; transition: width 0.4s ease, background-color 0.4s; }
+        .progress-text { font-size: 12px; color: var(--muted); margin-top: 7px; text-align: right; }
 
         .log-details {
             margin-top: 15px;
             font-size: 13px;
-            color: #cbd5e1;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.4));
+            color: var(--text-2);
+            background: rgba(18, 12, 8, 0.5);
             border-radius: 12px;
-            padding: 16px 18px;
-            border: 1px solid rgba(56, 189, 248, 0.1);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            padding: 14px 16px;
+            border: 1px solid rgba(230, 180, 86, 0.12);
         }
+        .log-details summary { cursor: pointer; user-select: none; color: var(--text); outline: none; font-weight: 600; font-size: 13px; }
+        .log-details summary:hover { color: var(--gold-2); }
 
-        .log-details summary {
-            cursor: pointer;
-            user-select: none;
-            color: #e2e8f0;
-            outline: none;
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 0.3px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .log-details[open] summary {
-            margin-bottom: 4px;
-        }
-
-        .log-details summary:hover {
-            color: #38bdf8;
-        }
-
-        .log-details summary::marker {
-            color: #475569;
-        }
-
-        .log-list {
-            margin: 8px 0 0 0;
-            padding: 0 0 0 20px;
-            list-style: none;
-            max-height: 200px;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* 时间线竖线 */
-        .log-list::before {
-            content: "";
-            position: absolute;
-            left: 7px;
-            top: 8px;
-            bottom: 8px;
-            width: 2px;
-            background: linear-gradient(180deg, rgba(56, 189, 248, 0.3), rgba(16, 185, 129, 0.3));
-            border-radius: 1px;
-        }
-
-        .log-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .log-list::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 3px;
-        }
-
-        .log-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .log-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .log-list li {
-            margin: 0;
-            padding: 10px 12px;
-            line-height: 1.5;
-            display: flex;
-            align-items: center;
-            position: relative;
-            border-radius: 8px;
-            transition: background 0.2s ease;
-        }
-
-        .log-list li:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        /* 时间线节点圆点 */
-        .log-list li::before {
-            content: "";
-            position: absolute;
-            left: -17px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            border: 2px solid #334155;
-            background: #1e293b;
-            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.8);
-            z-index: 1;
-        }
-
-        .log-done {
-            color: #d1fae5;
-        }
-
-        .log-done::before {
-            background: #10b981 !important;
-            border-color: #10b981 !important;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4), 0 0 0 3px rgba(15, 23, 42, 0.8) !important;
-        }
-
+        .log-list { margin: 8px 0 0 0; padding: 0 0 0 20px; list-style: none; max-height: 200px; overflow-y: auto; }
+        .log-list li { margin: 0; padding: 8px 12px; line-height: 1.5; display: flex; align-items: center; border-radius: 8px; }
+        .log-done { color: #a9e8c4; }
+        .log-running { color: #bcd6f7; animation: pulseText 2s infinite; }
         .log-duration {
             margin-left: auto;
             font-size: 12px;
-            color: #67e8f9;
-            background: rgba(56, 189, 248, 0.08);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            padding: 2px 12px;
+            color: #f5d488;
+            background: rgba(230, 180, 86, 0.10);
+            border: 1px solid rgba(230, 180, 86, 0.24);
+            padding: 2px 10px;
             border-radius: 12px;
             white-space: nowrap;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            font-variant-numeric: tabular-nums;
-            flex-shrink: 0;
         }
 
-        .log-running {
-            color: #bae6fd;
-            animation: pulseText 2s infinite;
-        }
-
-        .log-running::before {
-            background: #3b82f6 !important;
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5), 0 0 0 3px rgba(15, 23, 42, 0.8) !important;
-            animation: pulseNode 2s infinite !important;
-        }
-
-        @keyframes pulseText {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.7;
-            }
-        }
-
-        @keyframes pulseNode {
-            0%, 100% {
-                box-shadow: 0 0 8px rgba(59, 130, 246, 0.5), 0 0 0 3px rgba(15, 23, 42, 0.8);
-            }
-            50% {
-                box-shadow: 0 0 14px rgba(59, 130, 246, 0.8), 0 0 0 3px rgba(15, 23, 42, 0.8);
-            }
-        }
-
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.65; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📄 知识库文件导入</h1>
+    <div class="page-head">
+        <div class="logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 5.4A2.4 2.4 0 0 1 6.4 3H11v15.6H6.4A2.4 2.4 0 0 0 4 21V5.4z" fill="#f7d488"/>
+                <path d="M20 5.4A2.4 2.4 0 0 0 17.6 3H13v15.6h4.6A2.4 2.4 0 0 1 20 21V5.4z" fill="#e6b456"/>
+                <path d="M12 3v15.6" stroke="#c98a3a" stroke-width="1.1"/>
+                <path d="M7 6.8h2.3M7 9.4h2.3" stroke="#c98a3a" stroke-width="0.9" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1>知识库文件导入</h1>
+        <div class="sub">批量导入书籍资料，可为每个文件单独配置封面与元数据</div>
+    </div>
 
     <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
         <div class="upload-icon">☁️</div>
-        <div class="upload-text">点击或拖拽文件到此处 (PDF/MD)</div>
-        <input type="file" id="fileInput" class="file-input"  accept=".pdf,.md">
+        <div class="upload-text">点击或拖拽文件到此处</div>
+        <div class="upload-hint">支持批量导入（PDF / MD）</div>
+        <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.md">
     </div>
 
-    <details class="metadata-panel" open>
-        <summary>📚 书籍元数据（可选，留空则自动识别）</summary>
-        <div class="metadata-form">
-            <div class="field">
-                <label>书名</label>
-                <input id="bookName" placeholder="如：三体">
-            </div>
-            <div class="field">
-                <label>作者名</label>
-                <input id="author" placeholder="如：刘慈欣">
-            </div>
-            <div class="field">
-                <label>内容类型</label>
-                <select id="contentType">
-                    <option value="">自动识别</option>
-                    <option>有声书信息</option>
-                    <option>书籍简介</option>
-                    <option>作者介绍</option>
-                    <option>听书笔记</option>
-                    <option>推荐运营资料</option>
-                    <option>用户评论摘要</option>
-                    <option>常见问答</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>类别/标签</label>
-                <input id="category" placeholder="如：科幻，悬疑">
-            </div>
-            <div class="field">
-                <label>有声书时长</label>
-                <input id="duration" placeholder="如：50小时">
-            </div>
-        </div>
-    </details>
+    <div class="pending-list" id="pendingList"></div>
 
-    <div class="cover-panel">
-        <div class="cover-title">🖼️ 封面图片（可选 · 用于多模态封面检索）</div>
-        <div class="cover-body">
-            <input type="file" id="coverInput" accept="image/*" class="file-input">
-            <div class="cover-drop" onclick="document.getElementById('coverInput').click()">
-                <span id="coverPlaceholder">点击选择<br>封面图片</span>
-                <img id="coverImg" alt="封面预览" style="display:none">
-            </div>
-            <button class="cover-clear" id="coverClear" style="display:none">✕ 移除</button>
-        </div>
+    <div class="submit-bar">
+        <button class="submit-btn" id="btnSubmit" disabled>提交导入</button>
+        <span class="submit-hint" id="submitHint">请先选择文件</span>
     </div>
 
-    <div id="fileList" class="file-list">
-    </div>
+    <div id="fileList" class="file-list"></div>
 </div>
 
 <script>
+    const API_BASE = 'http://127.0.0.1:8000';
+    const CONTENT_TYPES = ['有声书信息', '书籍简介', '作者介绍', '听书笔记', '推荐运营资料', '用户评论摘要', '常见问答'];
+
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
+    const pendingList = document.getElementById('pendingList');
     const fileList = document.getElementById('fileList');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const submitHint = document.getElementById('submitHint');
 
-    // 封面图片（可选）：选图后本地预览，上传时随 formData 一并提交
-    const coverInput = document.getElementById('coverInput');
-    const coverImg = document.getElementById('coverImg');
-    const coverPlaceholder = document.getElementById('coverPlaceholder');
-    const coverClear = document.getElementById('coverClear');
-    let coverFile = null;
+    let pendingFiles = [];
+    let seq = 0;
 
-    coverInput.addEventListener('change', (e) => {
-        coverFile = e.target.files[0] || null;
-        if (coverFile) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                coverImg.src = ev.target.result;
-                coverImg.style.display = 'block';
-                coverPlaceholder.style.display = 'none';
-                coverClear.style.display = 'inline-block';
-            };
-            reader.readAsDataURL(coverFile);
+    function escapeHtml(str) {
+        return String(str ?? '')
+            .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+
+    function typeOptions(selected) {
+        let html = '<option value="">自动识别</option>';
+        for (const ct of CONTENT_TYPES) {
+            html += `<option ${ct === selected ? 'selected' : ''}>${ct}</option>`;
         }
-    });
-
-    coverClear.addEventListener('click', () => {
-        coverFile = null;
-        coverInput.value = '';
-        coverImg.src = '';
-        coverImg.style.display = 'none';
-        coverPlaceholder.style.display = '';
-        coverClear.style.display = 'none';
-    });
-
-    // 模拟后端API地址
-    const API_BASE = 'http://127.0.0.1:8000';
+        return html;
+    }
 
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
-        dropZone.style.borderColor = '#38bdf8';
-        dropZone.style.background = 'rgba(56, 189, 248, 0.1)';
+        dropZone.style.borderColor = '#e6b456';
+        dropZone.style.background = 'rgba(230, 180, 86, 0.08)';
     });
-
     dropZone.addEventListener('dragleave', (e) => {
         e.preventDefault();
         dropZone.style.borderColor = '';
         dropZone.style.background = '';
     });
-
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.style.borderColor = '';
         dropZone.style.background = '';
-        handleFiles(e.dataTransfer.files);
+        addPendingFiles(e.dataTransfer.files);
     });
-
     fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
+        addPendingFiles(e.target.files);
+        fileInput.value = '';
     });
 
-    function handleFiles(files) {
-        Array.from(files).forEach(uploadFile);
+    function addPendingFiles(files) {
+        for (const file of Array.from(files)) {
+            pendingFiles.push({ id: 'p' + (++seq), file, coverFile: null, coverPreview: '' });
+        }
+        renderPendingList();
+    }
+
+    function renderPendingList() {
+        pendingList.innerHTML = '';
+        pendingFiles.forEach((item) => {
+            const html = `
+            <div class="pending-item" data-id="${item.id}">
+                <div class="p-head">
+                    <span class="p-name">${escapeHtml(item.file.name)}</span>
+                    <span class="p-size">${(item.file.size / 1024).toFixed(2)} KB</span>
+                    <button class="p-remove" data-id="${item.id}">✕</button>
+                </div>
+                <div class="p-body">
+                    <div class="p-cover">
+                        <span class="p-cover-label">封面（可选）</span>
+                        <div class="p-cover-box" data-id="${item.id}">
+                            ${item.coverPreview ? `<img src="${item.coverPreview}" alt="封面">` : '点击选封面'}
+                        </div>
+                        <input type="file" class="p-cover-input" data-id="${item.id}" accept="image/*" style="display:none">
+                        ${item.coverFile ? `<button class="p-cover-clear" data-id="${item.id}">移除封面</button>` : ''}
+                    </div>
+                    <details class="p-meta">
+                        <summary>📚 书籍元数据（可选，留空自动识别）</summary>
+                        <div class="p-meta-grid">
+                            <input class="p-meta-book" data-id="${item.id}" placeholder="书名（如：三体）">
+                            <input class="p-meta-author" data-id="${item.id}" placeholder="作者（如：刘慈欣）">
+                            <select class="p-meta-type" data-id="${item.id}">${typeOptions()}</select>
+                            <input class="p-meta-category" data-id="${item.id}" placeholder="类别（如：科幻）">
+                            <input class="p-meta-duration" data-id="${item.id}" placeholder="时长（如：50小时）">
+                        </div>
+                    </details>
+                </div>
+            </div>`;
+            pendingList.insertAdjacentHTML('beforeend', html);
+        });
+        updateSubmitBtn();
+    }
+
+    function updateSubmitBtn() {
+        const n = pendingFiles.length;
+        btnSubmit.disabled = n === 0;
+        btnSubmit.textContent = n > 0 ? `提交导入 (${n})` : '提交导入';
+        submitHint.textContent = n > 0 ? `已选择 ${n} 个文件，可逐项配置封面与元数据后提交` : '请先选择文件';
+    }
+
+    function findItem(id) {
+        return pendingFiles.find(p => p.id === id);
+    }
+
+    pendingList.addEventListener('click', (e) => {
+        const coverBox = e.target.closest('.p-cover-box');
+        const clearBtn = e.target.closest('.p-cover-clear');
+        const removeBtn = e.target.closest('.p-remove');
+
+        if (coverBox) {
+            const input = coverBox.parentElement.querySelector('.p-cover-input');
+            input.click();
+            return;
+        }
+        if (clearBtn) {
+            const item = findItem(clearBtn.dataset.id);
+            if (item) { item.coverFile = null; item.coverPreview = ''; renderPendingList(); }
+            return;
+        }
+        if (removeBtn) {
+            pendingFiles = pendingFiles.filter(p => p.id !== removeBtn.dataset.id);
+            renderPendingList();
+            return;
+        }
+    });
+
+    pendingList.addEventListener('change', (e) => {
+        if (e.target.classList.contains('p-cover-input')) {
+            const item = findItem(e.target.dataset.id);
+            const f = e.target.files[0] || null;
+            if (item && f) {
+                item.coverFile = f;
+                const reader = new FileReader();
+                reader.onload = (ev) => { item.coverPreview = ev.target.result; renderPendingList(); };
+                reader.readAsDataURL(f);
+            }
+        }
+    });
+
+    btnSubmit.addEventListener('click', submitAll);
+
+    async function submitAll() {
+        if (pendingFiles.length === 0) return;
+
+        const items = pendingFiles.map(item => {
+            const root = pendingList.querySelector(`.pending-item[data-id="${item.id}"]`);
+            const meta = {
+                book_name: root.querySelector('.p-meta-book').value.trim(),
+                author: root.querySelector('.p-meta-author').value.trim(),
+                content_type: root.querySelector('.p-meta-type').value.trim(),
+                category: root.querySelector('.p-meta-category').value.trim(),
+                duration: root.querySelector('.p-meta-duration').value.trim(),
+            };
+            return { ...item, meta };
+        });
+
+        pendingFiles = [];
+        renderPendingList();
+        btnSubmit.disabled = true;
+        submitHint.textContent = '正在导入…';
+
+        for (const item of items) {
+            await uploadFile(item);
+        }
+
+        submitHint.textContent = '已提交完成，可继续选择文件';
     }
 
     function updateProgressUI(wrapper, percentage) {
         const bar = wrapper.querySelector('.progress-bar');
         const text = wrapper.querySelector('.progress-text');
-
-        const safePercentage = Math.min(Math.max(percentage, 0), 100);
-
-        bar.style.width = safePercentage + '%';
-        text.textContent = Math.round(safePercentage) + '%';
-
-        if (safePercentage >= 100) {
-            bar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
-        } else if (safePercentage < 10) {
-            bar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
-        } else {
-            bar.style.background = 'linear-gradient(90deg, #3b82f6, #60a5fa)';
-        }
+        const safe = Math.min(Math.max(percentage, 0), 100);
+        bar.style.width = safe + '%';
+        text.textContent = Math.round(safe) + '%';
+        if (safe >= 100) bar.style.background = 'linear-gradient(90deg, #34d399, #10b981)';
+        else if (safe < 10) bar.style.background = 'linear-gradient(90deg, #f0a83a, #fbbf24)';
+        else bar.style.background = 'linear-gradient(90deg, #60a5fa, #2563eb)';
     }
 
-    async function uploadFile(file) {
-        // === 核心逻辑优化：动态判断总节点数 ===
-        const isPDF = file.name.toLowerCase().endsWith('.pdf');
-        // PDF 走 9 步（含上传、封面入库），MD 跳过 pdf_to_md 走 8 步
+    async function uploadFile(item) {
+        const isPDF = item.file.name.toLowerCase().endsWith('.pdf');
         const totalNodes = isPDF ? 9 : 8;
 
         const id = 'file-' + Math.random().toString(36).substr(2, 8);
-        const html = `
+        fileList.insertAdjacentHTML('afterbegin', `
             <div class="file-item" id="${id}">
                 <div class="file-info">
                     <div class="file-header">
-                        <span class="file-name">${file.name}</span>
-                        <span class="file-size">${(file.size / 1024).toFixed(2)} KB</span>
+                        <span class="file-name">${escapeHtml(item.file.name)}</span>
+                        <span class="file-size">${(item.file.size / 1024).toFixed(2)} KB</span>
                     </div>
                     <div class="progress-wrapper">
-                        <div class="progress-bar-container">
-                            <div class="progress-bar"></div>
-                        </div>
+                        <div class="progress-bar-container"><div class="progress-bar"></div></div>
                         <div class="progress-text">0%</div>
                     </div>
                     <details class="log-details" open>
@@ -687,8 +538,7 @@
                 </div>
                 <div class="status-badge status-uploading">上传中...</div>
             </div>
-        `;
-        fileList.insertAdjacentHTML('afterbegin', html);
+        `);
 
         const itemEl = document.getElementById(id);
         const statusBadge = itemEl.querySelector('.status-badge');
@@ -696,78 +546,48 @@
         const logListEl = itemEl.querySelector('.log-list');
 
         const formData = new FormData();
-        formData.append('file', file);
-
-        // 读取（可选的）书籍元数据，随文件一起提交；留空则由后端 LLM 自动识别
-        const metadata = {
-            book_name: document.getElementById('bookName').value.trim(),
-            author: document.getElementById('author').value.trim(),
-            content_type: document.getElementById('contentType').value.trim(),
-            category: document.getElementById('category').value.trim(),
-            duration: document.getElementById('duration').value.trim(),
-        };
-        for (const [key, value] of Object.entries(metadata)) {
-            formData.append(key, value);
+        formData.append('file', item.file);
+        for (const [k, v] of Object.entries(item.meta || {})) {
+            if (v) formData.append(k, v);
         }
-
-        // 封面图片（可选）：选中则随文件一起提交
-        if (coverFile) {
-            formData.append('cover', coverFile);
+        if (item.coverFile) {
+            formData.append('cover', item.coverFile);
         }
 
         try {
             progressWrapper.style.display = 'block';
-
-            // 使用动态的 totalNodes 计算基础上传进度
             const uploadPercentage = (1 / totalNodes) * 100;
             updateProgressUI(progressWrapper, Math.min(uploadPercentage, 10));
 
             const initialLog = document.createElement('li');
-            initialLog.textContent = "开始上传文件...";
-            initialLog.className = "log-running";
+            initialLog.textContent = '开始上传文件...';
+            initialLog.className = 'log-running';
             logListEl.appendChild(initialLog);
 
-            const response = await fetch(`${API_BASE}/upload`, {
-                method: 'POST',
-                body: formData
-            });
-
+            const response = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
             if (!response.ok) throw new Error('Upload failed');
-
             const result = await response.json();
-            console.log(result)
             const taskId = result.task_id;
 
             updateProgressUI(progressWrapper, uploadPercentage);
             statusBadge.textContent = '处理中';
             statusBadge.className = 'status-badge status-processing';
 
-            // 把专属的 totalNodes 传给轮询函数
             pollStatus(taskId, itemEl, totalNodes);
-
         } catch (error) {
             console.error(error);
             statusBadge.textContent = '上传失败';
             statusBadge.className = 'status-badge status-error';
             updateProgressUI(progressWrapper, 0);
-
             const errLog = document.createElement('li');
-            errLog.textContent = "❌ 网络请求失败或服务器异常";
-            errLog.style.color = "#ef4444";
+            errLog.textContent = '❌ 网络请求失败或服务器异常';
+            errLog.style.color = '#f87171';
             logListEl.appendChild(errLog);
         }
     }
 
-    function normalizeLogText(text) {
-        if (typeof text !== 'string') return String(text);
-        return text;
-    }
-
-    // 接收 totalNodes 参数计算最终百分比和渲染文案
     function formatDuration(seconds) {
-        if (seconds < 60) {
-            return seconds.toFixed(1) + 's';
-        }
+        if (seconds < 60) return seconds.toFixed(1) + 's';
         const mins = Math.floor(seconds / 60);
         const secs = (seconds % 60).toFixed(0);
         return `${mins}m${secs}s`;
@@ -776,64 +596,44 @@
     function renderLogsAndCalculateProgress(itemEl, doneList, runningList, totalNodes, durations) {
         const logSummary = itemEl.querySelector('.log-details summary');
         const logListEl = itemEl.querySelector('.log-list');
-
         const done = Array.isArray(doneList) ? doneList : [];
         const running = Array.isArray(runningList) ? runningList : [];
         const durationMap = durations || {};
 
-        // === 进度计算逻辑 ===
-        let currentPercentage = (done.length / totalNodes) * 100;
+        let pct = (done.length / totalNodes) * 100;
+        if (running.length > 0) pct += (0.5 / totalNodes) * 100;
+        if (pct >= 100) pct = 95;
 
-        if (running.length > 0) {
-            currentPercentage += (0.5 / totalNodes) * 100;
-        }
-
-        if (currentPercentage >= 100) {
-            currentPercentage = 95;
-        }
-
-        // 计算总耗时
         let totalDuration = 0;
-        for (const key in durationMap) {
-            totalDuration += durationMap[key];
-        }
-        const totalDurationText = totalDuration > 0 ? ` | 总耗时: ${formatDuration(totalDuration)}` : '';
+        for (const k in durationMap) totalDuration += durationMap[k];
+        const durText = totalDuration > 0 ? ` | 总耗时: ${formatDuration(totalDuration)}` : '';
 
-        // 更新日志文案
-        logSummary.textContent = `📋 运行日志 (已完成: ${done.length}, 进行中: ${running.length}, 共 ${totalNodes} 步${totalDurationText})`;
-
+        logSummary.textContent = `📋 运行日志 (已完成: ${done.length}, 进行中: ${running.length}, 共 ${totalNodes} 步${durText})`;
         logListEl.innerHTML = '';
 
-        for (const item of done) {
-            if (item === 'upload_file') continue;
-
+        for (const it of done) {
+            if (it === 'upload_file') continue;
             const li = document.createElement('li');
             const nameSpan = document.createElement('span');
-            nameSpan.textContent = `${normalizeLogText(item)} 节点执行完成`;
+            nameSpan.textContent = `${it} 节点执行完成`;
             li.appendChild(nameSpan);
-
-            // 添加耗时标签
-            if (durationMap[item] !== undefined) {
-                const durationSpan = document.createElement('span');
-                durationSpan.className = 'log-duration';
-                durationSpan.textContent = formatDuration(durationMap[item]);
-                li.appendChild(durationSpan);
+            if (durationMap[it] !== undefined) {
+                const ds = document.createElement('span');
+                ds.className = 'log-duration';
+                ds.textContent = formatDuration(durationMap[it]);
+                li.appendChild(ds);
             }
-
             li.className = 'log-done';
             logListEl.appendChild(li);
         }
-
-        for (const item of running) {
+        for (const it of running) {
             const li = document.createElement('li');
-            li.textContent = `正在处理 ${normalizeLogText(item)} 节点...`;
+            li.textContent = `正在处理 ${it} 节点...`;
             li.className = 'log-running';
             logListEl.appendChild(li);
         }
-
         logListEl.scrollTop = logListEl.scrollHeight;
-
-        return currentPercentage;
+        return pct;
     }
 
     function pollStatus(taskId, itemEl, totalNodes) {
@@ -844,17 +644,13 @@
 
         const interval = setInterval(async () => {
             if (stopped) return;
-
             try {
                 const res = await fetch(`${API_BASE}/status/${taskId}`);
                 if (!res.ok) throw new Error('Status request failed');
-
                 const data = await res.json();
-
                 if (stopped) return;
 
-                // 传入 totalNodes 继续计算
-                const calculatedPercentage = renderLogsAndCalculateProgress(itemEl, data.done_list, data.running_list, totalNodes, data.durations);
+                const pct = renderLogsAndCalculateProgress(itemEl, data.done_list, data.running_list, totalNodes, data.durations);
 
                 if (data.status === 'completed') {
                     stopped = true;
@@ -862,25 +658,19 @@
                     statusBadge.textContent = '已完成';
                     statusBadge.className = 'status-badge status-completed';
                     updateProgressUI(progressWrapper, 100);
-
-                    setTimeout(() => {
-                        logDetails.open = false;
-                    }, 1000);
-
+                    setTimeout(() => { logDetails.open = false; }, 1000);
                 } else if (data.status === 'failed') {
                     stopped = true;
                     clearInterval(interval);
                     statusBadge.textContent = '失败';
                     statusBadge.className = 'status-badge status-error';
-
                     const logListEl = itemEl.querySelector('.log-list');
                     const errLog = document.createElement('li');
-                    errLog.textContent = "❌ 工作流执行失败中止";
-                    errLog.style.color = "#ef4444";
+                    errLog.textContent = '❌ 工作流执行失败中止';
+                    errLog.style.color = '#f87171';
                     logListEl.appendChild(errLog);
-
                 } else if (data.status === 'processing') {
-                    updateProgressUI(progressWrapper, calculatedPercentage);
+                    updateProgressUI(progressWrapper, pct);
                 }
             } catch (e) {
                 console.error('Polling error', e);
