@@ -188,6 +188,29 @@ class NodeItemNameConfirm(NodeBase):
         :param state: 工作流状态对象
         :return: 更新后的状态对象
         """
+        original_query = (state.get("original_query") or "").strip()
+        query_image = (state.get("query_image") or "").strip()
+
+        # 纯图片查询（只上传了图、未输入文字）：跳过主体提取与追问，
+        # 用默认文本补全 rewritten_query，直接走检索分支（封面图搜图 + 无过滤文本检索），
+        # 避免 original_query 为空导致链路报错。
+        if query_image and not original_query:
+            session_id = state.get("session_id")
+            if not session_id:
+                logger.error("会话ID不存在")
+                raise ValueError("会话ID不存在")
+            default_query = "识别这张图片对应的书籍内容"
+            message_id = add_or_update_history(session_id=session_id, role="user", text="[图片]")
+            return {
+                "message_id": message_id,
+                "original_query": default_query,
+                "rewritten_query": default_query,
+                "item_names": [],
+                "is_topic_search": True,
+                "answer": "",
+                "history": get_recent_history_list(session_id, limit=10),
+            }
+
         history_content, message_id, original_query, session_id = self.get_history_content(state)
         item_names, rewritten_query = self.get_item_names(history_content, original_query)
 

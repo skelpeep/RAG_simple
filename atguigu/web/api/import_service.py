@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def run_main_graph(task_id:str,local_dir:str,local_file_path:str,user_metadata:dict=None,source_path:str=""):
+def run_main_graph(task_id:str,local_dir:str,local_file_path:str,user_metadata:dict=None,source_path:str="",cover_image_path:str=""):
     try:
         init_state = {
             "task_id": task_id,
@@ -38,6 +38,7 @@ def run_main_graph(task_id:str,local_dir:str,local_file_path:str,user_metadata:d
             "local_file_path": local_file_path,
             "user_metadata": user_metadata or {},
             "source_path": source_path,
+            "cover_image_path": cover_image_path,
         }
         update_task_status(task_id,TASK_STATUS_PROCESSING)
         MainGraphRunner.create_and_run(init_state)
@@ -51,6 +52,7 @@ def run_main_graph(task_id:str,local_dir:str,local_file_path:str,user_metadata:d
 async def upload_file(
         background_tasks:BackgroundTasks,
         file: UploadFile = File(...,description="上传的文件"),
+        cover: UploadFile = File(None,description="封面图片（可选，用于多模态封面检索）"),
         book_name: str = Form("", description="书名（可选，非空则覆盖自动识别）"),
         author: str = Form("", description="作者名（可选）"),
         content_type: str = Form("", description="内容类型（可选）"),
@@ -73,6 +75,15 @@ async def upload_file(
     with open(local_file_path, "wb") as f:
         shutil.copyfileobj(file.file, f,1024*1024)
     logger.info(f"文件上传成功，保存路径为：{local_file_path}")
+
+    # 封面图片（可选）：保存到本地，供多模态封面向量化入库
+    cover_image_path = ""
+    if cover and cover.filename:
+        cover_safe_name = Path(cover.filename).name
+        cover_image_path = str(local_dir_obj / f"cover_{task_id}_{cover_safe_name}")
+        with open(cover_image_path, "wb") as f:
+            shutil.copyfileobj(cover.file, f, 1024*1024)
+        logger.info(f"封面图片上传成功，保存路径为：{cover_image_path}")
 
 
     minio_client = get_minio_client()
@@ -103,6 +114,7 @@ async def upload_file(
         local_dir=local_dir,
         user_metadata=user_metadata,
         source_path=source_path,
+        cover_image_path=cover_image_path,
     )
 
     # 主要返回task_id，防止报错，其他的数据要和前端页面核对，前端需要但是没有我们后端就要返回

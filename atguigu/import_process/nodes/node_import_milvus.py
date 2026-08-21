@@ -125,15 +125,33 @@ class NodeImportMilvus(NodeBase):
 
     def insert_data(self, chunks, collection_name, file_title, milvus_client):
         milvus_client.load_collection(collection_name=collection_name)
+        # 兼容旧集合：旧 schema 可能缺少新加的字段（如 source_path），
+        # insert 前按集合实际字段过滤，剔除集合中不存在的字段，避免 DataNotMatchException
+        insert_chunks = self._filter_fields_by_schema(chunks, collection_name, milvus_client)
         file_title = file_title.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
         filter_str = f"file_title == '{file_title}'"
         milvus_client.delete(collection_name=collection_name, filter=filter_str)
-        res = milvus_client.insert(collection_name=collection_name, data=chunks)
+        res = milvus_client.insert(collection_name=collection_name, data=insert_chunks)
         logger.info(res)
         ids = res.get("ids")
         if ids:
             for i, chunk in enumerate(chunks):
                 chunk["id"] = ids[i]
+
+    @staticmethod
+    def _filter_fields_by_schema(chunks, collection_name, milvus_client):
+        """按集合实际 schema 过滤待插入字段，兼容旧集合缺少新字段的情况。"""
+        try:
+            desc = milvus_client.describe_collection(collection_name)
+            fields = {f.get("name") for f in (desc.get("fields") or [])}
+        except Exception:
+            return chunks
+        if not fields:
+            return chunks
+        return [
+            {k: v for k, v in chunk.items() if k in fields}
+            for chunk in chunks
+        ]
 
 
 

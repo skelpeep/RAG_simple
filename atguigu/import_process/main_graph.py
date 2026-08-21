@@ -2,6 +2,7 @@ from langgraph.constants import END
 from langgraph.graph import StateGraph
 
 from atguigu.import_process.nodes.node_bge_embedding import NodeBGEEmbedding
+from atguigu.import_process.nodes.node_cover_embedding import NodeCoverEmbedding
 from atguigu.import_process.nodes.node_document_split import NodeDocumentSplit
 from atguigu.import_process.nodes.node_entry import NodeEntry
 from atguigu.import_process.nodes.node_import_milvus import NodeImportMilvus
@@ -38,6 +39,7 @@ class MainGraphRunner:
         self.builder.add_node(NodeMDImg.name, NodeMDImg())
         self.builder.add_node(NodeDocumentSplit.name, NodeDocumentSplit())
         self.builder.add_node(NodeItemNameRecognition.name, NodeItemNameRecognition())
+        self.builder.add_node(NodeCoverEmbedding.name, NodeCoverEmbedding())
         self.builder.add_node(NodeBGEEmbedding.name, NodeBGEEmbedding())
         self.builder.add_node(NodeImportMilvus.name, NodeImportMilvus())
 
@@ -47,7 +49,8 @@ class MainGraphRunner:
         self.builder.add_edge(NodePDFToMD.name, NodeMDImg.name)
         self.builder.add_edge(NodeMDImg.name, NodeDocumentSplit.name)
         self.builder.add_edge(NodeDocumentSplit.name, NodeItemNameRecognition.name)
-        self.builder.add_edge(NodeItemNameRecognition.name, NodeBGEEmbedding.name)
+        self.builder.add_edge(NodeItemNameRecognition.name, NodeCoverEmbedding.name)
+        self.builder.add_edge(NodeCoverEmbedding.name, NodeBGEEmbedding.name)
         self.builder.add_edge(NodeBGEEmbedding.name, NodeImportMilvus.name)
         self.builder.add_edge(NodeImportMilvus.name, END)
 

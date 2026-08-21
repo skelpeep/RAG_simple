@@ -57,6 +57,24 @@ def search_hybrid(collection_name,reqs,ranker=(0.5,0.5),limit=10,output_fields=N
     return res
 
 
+def search_dense(collection_name, vector, anns_field, limit=10, output_fields=None, expr=None, metric_type="COSINE"):
+    """单向量（稠密）检索，用于多模态封面检索（图搜图 / 文搜图）。"""
+    milvus_client = get_milvus_client()
+    milvus_client.load_collection(collection_name=collection_name)
+    search_params = {"metric_type": metric_type, "params": {"nprobe": 16}}
+    res = milvus_client.search(
+        collection_name=collection_name,
+        data=[vector],
+        anns_field=anns_field,
+        limit=limit,
+        output_fields=output_fields,
+        search_params=search_params,
+        # 注意：MilvusClient.search 的过滤参数名是 filter，不是 expr
+        filter=expr,
+    )
+    return res
+
+
 
 
 

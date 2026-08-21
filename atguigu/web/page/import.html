@@ -148,6 +148,72 @@
             padding-right: 34px;
         }
 
+        .cover-panel {
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        .cover-title {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            margin-bottom: 10px;
+        }
+
+        .cover-body {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cover-drop {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 12px;
+            text-align: center;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .cover-drop:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.05);
+            box-shadow: inset 0 0 15px rgba(56, 189, 248, 0.1);
+        }
+
+        .cover-drop img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cover-clear {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .cover-clear:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
         .file-list {
             margin-top: 30px;
             display: flex;
@@ -495,6 +561,18 @@
         </div>
     </details>
 
+    <div class="cover-panel">
+        <div class="cover-title">🖼️ 封面图片（可选 · 用于多模态封面检索）</div>
+        <div class="cover-body">
+            <input type="file" id="coverInput" accept="image/*" class="file-input">
+            <div class="cover-drop" onclick="document.getElementById('coverInput').click()">
+                <span id="coverPlaceholder">点击选择<br>封面图片</span>
+                <img id="coverImg" alt="封面预览" style="display:none">
+            </div>
+            <button class="cover-clear" id="coverClear" style="display:none">✕ 移除</button>
+        </div>
+    </div>
+
     <div id="fileList" class="file-list">
     </div>
 </div>
@@ -503,6 +581,36 @@
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const fileList = document.getElementById('fileList');
+
+    // 封面图片（可选）：选图后本地预览，上传时随 formData 一并提交
+    const coverInput = document.getElementById('coverInput');
+    const coverImg = document.getElementById('coverImg');
+    const coverPlaceholder = document.getElementById('coverPlaceholder');
+    const coverClear = document.getElementById('coverClear');
+    let coverFile = null;
+
+    coverInput.addEventListener('change', (e) => {
+        coverFile = e.target.files[0] || null;
+        if (coverFile) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                coverImg.src = ev.target.result;
+                coverImg.style.display = 'block';
+                coverPlaceholder.style.display = 'none';
+                coverClear.style.display = 'inline-block';
+            };
+            reader.readAsDataURL(coverFile);
+        }
+    });
+
+    coverClear.addEventListener('click', () => {
+        coverFile = null;
+        coverInput.value = '';
+        coverImg.src = '';
+        coverImg.style.display = 'none';
+        coverPlaceholder.style.display = '';
+        coverClear.style.display = 'none';
+    });
 
     // 模拟后端API地址
     const API_BASE = 'http://127.0.0.1:8000';
@@ -555,8 +663,8 @@
     async function uploadFile(file) {
         // === 核心逻辑优化：动态判断总节点数 ===
         const isPDF = file.name.toLowerCase().endsWith('.pdf');
-        // PDF 需要 9 步（含上传），MD 跳过 pdf_to_md 需要 8 步
-        const totalNodes = isPDF ? 8 : 7;
+        // PDF 走 9 步（含上传、封面入库），MD 跳过 pdf_to_md 走 8 步
+        const totalNodes = isPDF ? 9 : 8;
 
         const id = 'file-' + Math.random().toString(36).substr(2, 8);
         const html = `
@@ -600,6 +708,11 @@
         };
         for (const [key, value] of Object.entries(metadata)) {
             formData.append(key, value);
+        }
+
+        // 封面图片（可选）：选中则随文件一起提交
+        if (coverFile) {
+            formData.append('cover', coverFile);
         }
 
         try {

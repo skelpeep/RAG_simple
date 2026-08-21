@@ -16,6 +16,7 @@ class ImportGraphState(TypedDict):
     local_dir: str  # 当前工作目录或输出目录
     local_file_path: str    # 原始输入文件路径
     file_title: str # 文件标题（文件名去后缀）
+    cover_image_path: str   # 封面图片本地路径（可选，用于多模态封面检索）
     pdf_path: str   # PDF 文件路径 (如果输入是PDF)
     md_path: str    # Markdown 文件路径 (转换后或直接输入的)
     source_path: str  # 来源路径或资源链接（如 MinIO 对象名 / 本地路径），用于检索溯源

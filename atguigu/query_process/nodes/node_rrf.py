@@ -17,6 +17,7 @@ class NodeRrf(NodeBase):
     def process(self, state: QueryGraphState):
         embedding_chunks = state.get("embedding_chunks","")
         hyde_embedding_chunks = state.get("hyde_embedding_chunks","")
+        cover_chunks = state.get("cover_chunks","") or []
         if not embedding_chunks:
             logger.error("embedding_chunks is empty")
             raise ValueError("embedding_chunks is empty")
@@ -28,6 +29,10 @@ class NodeRrf(NodeBase):
             (embedding_chunks,1),
             (hyde_embedding_chunks,1)
         ]
+
+        # 多模态封面召回为可选来源：有结果才参与融合，避免封面检索未配置时影响主链路
+        if cover_chunks:
+            weight_embedding.append((cover_chunks,1))
 
         final_chunks_dict = {}
 

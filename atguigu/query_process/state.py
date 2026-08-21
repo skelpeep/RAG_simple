@@ -12,10 +12,12 @@ class QueryGraphState(TypedDict):
     message_id: str  # 消息ID
     q :Queue
     original_query: str  # 用户原始问题
+    query_image: str  # 用户上传的封面图片（本地路径 / URL / base64），用于多模态封面检索（可选）
 
     # 检索过程中的中间数据
     embedding_chunks: list  # 普通向量检索回来的切片
     hyde_embedding_chunks: list  # 已向量化的假设性问题切片
+    cover_chunks: list  # 多模态封面检索回来的封面切片
     web_search_docs: list  # 网络搜索回来的文档
 
     # 排序过程中的数据

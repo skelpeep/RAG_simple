@@ -117,6 +117,11 @@ class NodeAnswerOutput(NodeBase):
                 img_url = img_url.strip()
                 if img_url and img_url not in seen:
                     seen.add(img_url)
+            # 封面召回（source=cover）的 url 字段即封面图片地址，一并输出
+            if doc.get("source") == "cover":
+                cover_url = (doc.get("url") or "").strip()
+                if cover_url and cover_url not in seen:
+                    seen.add(cover_url)
         images = list(seen)
         return images
 

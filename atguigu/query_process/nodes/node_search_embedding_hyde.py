@@ -29,12 +29,14 @@ class NodeSearchEmbeddingHyde(NodeBase):
         :return: 更新后的状态对象
         """
         rewritten_query = state.get("rewritten_query")
-        item_names = state.get("item_names")
+        item_names = state.get("item_names") or []
+        is_topic_search = state.get("is_topic_search", False)
         if not rewritten_query:
             logger.error("rewritten_query 为空")
             raise ValueError("rewritten_query 为空")
 
-        if not item_names:
+        # 主题类检索（类别/场景/主题）或纯图片查询时 item_names 可能为空，不做 item_name 过滤。
+        if not item_names and not is_topic_search:
             logger.error("item_names 为空")
             raise ValueError("item_names 为空")
 
@@ -59,7 +61,6 @@ class NodeSearchEmbeddingHyde(NodeBase):
         sparse_data = embeddings.get("sparse")[0]
 
         # 主题类检索（类别/场景/主题）时 item_names 并非具体书籍主体，不做 item_name 过滤。
-        is_topic_search = state.get("is_topic_search", False)
         expr = None
         if not is_topic_search:
             expr = f"item_name in {json.dumps(item_names,ensure_ascii=False)}"

@@ -62,7 +62,7 @@ async def delete_history(session_id: str=Path(...,description="会话id")):
 
 # queue_dict = {}
 
-def run_main_graph(task_id:str,original_query:str,session_id:str):
+def run_main_graph(task_id:str,original_query:str,session_id:str,query_image:str=""):
     # if not queue_dict.get(task_id):
     #     queue_dict[task_id] =Queue()
     # q= queue_dict[task_id]
@@ -74,6 +74,7 @@ def run_main_graph(task_id:str,original_query:str,session_id:str):
             "task_id": task_id,
             "original_query": original_query,
             "session_id": session_id,
+            "query_image": query_image,
             # "q":q
         }
 
@@ -94,6 +95,7 @@ def run_main_graph(task_id:str,original_query:str,session_id:str):
 class QueryParams(BaseModel):
     query:str = Field(...,description="查询内容")
     session_id:str = Field(...,description="会话id")
+    query_image:str = Field("",description="封面图片（本地路径 / URL / base64，可选，用于多模态封面检索）")
 
 
 @app.post("/query")
@@ -101,8 +103,9 @@ async def query(background_tasks:BackgroundTasks,query_params:QueryParams = Body
     task_id = str(uuid.uuid4())
     original_query = query_params.query
     session_id = query_params.session_id
+    query_image = query_params.query_image or ""
 
-    background_tasks.add_task(run_main_graph, task_id, original_query, session_id)
+    background_tasks.add_task(run_main_graph, task_id, original_query, session_id, query_image)
 
 
 

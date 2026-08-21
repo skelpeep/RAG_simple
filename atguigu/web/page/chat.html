@@ -3,95 +3,123 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-    <title>掌柜智库</title>
+    <title>掌柜智库 · 智能听书</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --panel: rgba(30, 41, 59, 0.7);
-            --text: #e2e8f0;
-            --muted: #94a3b8;
-            --brand: #38bdf8;
-            --brand2: #818cf8;
-            --bubble-user: linear-gradient(135deg, #38bdf8, #818cf8);
-            --bubble-bot: rgba(15, 23, 42, 0.6);
-            --border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --bg: #17110d;
+            --panel: rgba(40, 31, 24, 0.72);
+            --paper: #241b14;
+            --text: #f0e6d6;
+            --muted: #a99783;
+            --brand: #e3b04b;
+            --brand2: #c98a3a;
+            --accent: #d46a4a;
+            --bubble-user: linear-gradient(135deg, #f0c46a, #d99a3f);
+            --bubble-bot: rgba(34, 26, 20, 0.74);
+            --border: rgba(240, 230, 214, 0.10);
+            --border-strong: rgba(240, 230, 214, 0.16);
+            --shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6);
         }
 
         * {
-            box-sizing: border-box
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, Arial, sans-serif;
-            background-color: #0f172a;
-            background-image: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 85% 30%, rgba(129, 140, 248, 0.08) 0%, transparent 50%),
-            linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            font-family: "PingFang SC", "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, Arial, sans-serif;
             color: var(--text);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 18px;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 18% 18%, rgba(227, 176, 75, 0.12), transparent 42%),
+                radial-gradient(circle at 82% 12%, rgba(201, 138, 58, 0.10), transparent 40%),
+                radial-gradient(circle at 50% 108%, rgba(212, 106, 74, 0.08), transparent 52%),
+                linear-gradient(to right, rgba(240, 230, 214, 0.022) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(240, 230, 214, 0.022) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 44px 44px, 44px 44px;
         }
 
         .app {
             width: 100%;
             max-width: 980px;
-            height: min(820px, 92vh);
+            height: min(840px, 94vh);
             background: var(--panel);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 18px;
             box-shadow: var(--shadow);
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
+        /* ===== 顶栏 ===== */
         .topbar {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 14px 18px;
             border-bottom: 1px solid var(--border);
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(23, 17, 13, 0.55);
+            position: relative;
+        }
+
+        .topbar::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(227, 176, 75, 0.55), transparent);
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-width: 240px;
+            gap: 11px;
+            min-width: 250px;
         }
 
         .logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, rgba(227, 176, 75, 0.22), rgba(201, 138, 58, 0.14));
+            border: 1px solid rgba(227, 176, 75, 0.35);
+            box-shadow: 0 0 22px rgba(227, 176, 75, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .title {
             display: flex;
             flex-direction: column;
-            line-height: 1.1;
+            line-height: 1.15;
         }
 
         .title strong {
-            font-size: 14px
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            color: #f5ecdb;
         }
 
         .title span {
             font-size: 12px;
             color: var(--muted);
-            margin-top: 3px
+            margin-top: 3px;
+            letter-spacing: 0.3px;
         }
 
         .top-actions {
@@ -105,52 +133,72 @@
             font-size: 12px;
             color: var(--muted);
             border: 1px solid var(--border);
-            padding: 6px 10px;
+            padding: 6px 11px;
             border-radius: 999px;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(23, 17, 13, 0.55);
         }
 
         .btn {
-            border: none;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            color: #fff;
-            padding: 8px 12px;
+            border: 1px solid var(--border-strong);
+            background: rgba(227, 176, 75, 0.10);
+            color: var(--brand);
+            padding: 7px 13px;
             border-radius: 10px;
             font-size: 12px;
             cursor: pointer;
+            transition: all .2s ease;
         }
 
-        .btn:disabled {
-            opacity: .6;
-            cursor: not-allowed
+        .btn:hover {
+            background: rgba(227, 176, 75, 0.18);
+            border-color: rgba(227, 176, 75, 0.4);
         }
 
+        /* ===== 聊天区 ===== */
         .chat {
             flex: 1;
-            overflow: auto;
-            padding: 16px 14px 10px;
-            background: rgba(15, 23, 42, 0.3);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 18px 16px 12px;
+            background: rgba(23, 17, 13, 0.25);
+        }
+
+        .chat::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat::-webkit-scrollbar-thumb {
+            background: rgba(169, 151, 131, 0.25);
+            border-radius: 8px;
+        }
+
+        .chat::-webkit-scrollbar-thumb:hover {
+            background: rgba(227, 176, 75, 0.4);
         }
 
         .dayline {
             text-align: center;
             color: var(--muted);
             font-size: 12px;
-            margin: 6px 0 14px;
+            margin: 6px 0 16px;
+            letter-spacing: 1px;
         }
 
         .msg {
             display: flex;
-            gap: 10px;
-            margin: 10px 0;
+            gap: 11px;
+            margin: 12px 0;
             align-items: flex-end;
         }
 
         .msg.user {
-            justify-content: flex-end
+            justify-content: flex-end;
         }
 
-        /* 关键：只让“消息内容容器”(排除头像)在 flex 中可伸缩，避免被压到“1 个字宽”导致竖排换行 */
         .msg > div:not(.avatar) {
             flex: 1;
             min-width: 0;
@@ -163,59 +211,123 @@
         }
 
         .avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            background: rgba(56, 189, 248, 0.15);
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            background: rgba(227, 176, 75, 0.12);
+            border: 1px solid rgba(227, 176, 75, 0.22);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: #94a3b8;
+            font-size: 16px;
+            color: #d9b06a;
             flex: 0 0 auto;
+            user-select: none;
         }
 
         .avatar.bot {
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2))
+            background: linear-gradient(135deg, rgba(227, 176, 75, 0.20), rgba(201, 138, 58, 0.12));
+            box-shadow: 0 0 14px rgba(227, 176, 75, 0.16);
         }
 
         .bubble {
-            max-width: min(720px, 76%);
+            max-width: min(720px, 78%);
             display: inline-block;
             border-radius: 14px;
-            padding: 10px 12px;
+            padding: 11px 14px;
             border: 1px solid var(--border);
             background: var(--bubble-bot);
             position: relative;
-            line-height: 1.55;
+            line-height: 1.6;
             font-size: 14px;
             white-space: pre-wrap;
             overflow-wrap: break-word;
-            color: #e2e8f0;
+            color: var(--text);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        .msg.bot .bubble {
+            border-top-left-radius: 5px;
         }
 
         .msg.user .bubble {
             background: var(--bubble-user);
-            color: #fff;
+            color: #3b2a14;
             border-color: transparent;
+            border-top-right-radius: 5px;
+            box-shadow: 0 4px 16px rgba(217, 154, 63, 0.22);
         }
 
         .meta {
             font-size: 11px;
             color: var(--muted);
             margin-top: 6px;
+            padding: 0 2px;
         }
 
         .msg.user .meta {
-            color: rgba(255, 255, 255, .85)
+            color: rgba(169, 151, 131, 0.9);
         }
 
+        /* ===== 欢迎区 ===== */
+        .bubble.welcome {
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            padding: 4px 2px;
+        }
+
+        .welcome-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #f7efdf;
+            margin-bottom: 8px;
+        }
+
+        .welcome-title .accent {
+            color: var(--brand);
+        }
+
+        .welcome-text {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .suggestions {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .chip {
+            border: 1px solid var(--border-strong);
+            background: rgba(227, 176, 75, 0.06);
+            color: #e6d4b2;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all .18s ease;
+            font-family: inherit;
+        }
+
+        .chip:hover {
+            background: rgba(227, 176, 75, 0.16);
+            border-color: rgba(227, 176, 75, 0.45);
+            color: #f4dfa8;
+            transform: translateY(-1px);
+        }
+
+        /* ===== 进度 ===== */
         details.progress {
-            margin-top: 8px;
-            border: 1px dashed rgba(56, 189, 248, 0.3);
-            border-radius: 12px;
-            padding: 8px 10px;
-            background: rgba(15, 23, 42, 0.4);
+            margin-top: 9px;
+            border: 1px dashed rgba(227, 176, 75, 0.28);
+            border-radius: 11px;
+            padding: 8px 11px;
+            background: rgba(23, 17, 13, 0.45);
         }
 
         details.progress summary {
@@ -227,17 +339,18 @@
 
         .progress ul {
             margin: 8px 0 0 18px;
-            padding: 0
+            padding: 0;
         }
 
         .progress li {
             margin: 4px 0;
             font-size: 12px;
-            color: #94a3b8
+            color: #a99783;
         }
 
+        /* ===== 图片 ===== */
         .answer-images {
-            margin-top: 10px;
+            margin-top: 12px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -245,14 +358,14 @@
 
         .answer-images img {
             display: block;
-            max-width: min(100%, 600px);
-            max-height: 600px;
+            max-width: min(100%, 560px);
+            max-height: 560px;
             width: auto;
             height: auto;
             border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
-            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-strong);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+            background: rgba(23, 17, 13, 0.6);
         }
 
         .answer-images a {
@@ -262,37 +375,85 @@
             word-break: break-all;
         }
 
+        .bubble-img img {
+            max-width: 160px;
+            max-height: 160px;
+            border-radius: 10px;
+            border: 1px solid var(--border-strong);
+            margin-top: 8px;
+            display: block;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== 打字动画 ===== */
         .typing {
             display: inline-flex;
             gap: 6px;
             align-items: center;
+            padding: 2px 0;
         }
 
         .dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: #38bdf8;
+            background: #e3b04b;
             animation: bounce 1.2s infinite ease-in-out;
         }
 
         .dot:nth-child(2) {
-            animation-delay: .15s
+            animation-delay: .15s;
         }
 
         .dot:nth-child(3) {
-            animation-delay: .3s
+            animation-delay: .3s;
         }
 
         @keyframes bounce {
             0%, 80%, 100% {
                 transform: translateY(0);
-                opacity: .6
+                opacity: .55;
             }
             40% {
                 transform: translateY(-5px);
-                opacity: 1
+                opacity: 1;
             }
+        }
+
+        /* ===== 输入区 ===== */
+        .img-preview-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            border-top: 1px solid var(--border);
+            background: rgba(23, 17, 13, 0.4);
+        }
+
+        .img-preview-bar img {
+            width: 46px;
+            height: 46px;
+            object-fit: cover;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+        }
+
+        .img-preview-bar .img-name {
+            flex: 1;
+            font-size: 12px;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .img-preview-bar .img-remove {
+            background: none;
+            border: none;
+            color: #e08a6a;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 6px;
         }
 
         .composer {
@@ -301,52 +462,87 @@
             display: flex;
             gap: 10px;
             align-items: flex-end;
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(23, 17, 13, 0.55);
         }
 
         textarea {
             flex: 1;
             resize: none;
-            min-height: 44px;
+            min-height: 46px;
             max-height: 140px;
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
+            padding: 12px 14px;
+            border-radius: 13px;
+            border: 1px solid var(--border-strong);
             outline: none;
             font-size: 14px;
             line-height: 1.5;
-            background: rgba(15, 23, 42, 0.6);
-            color: #e2e8f0;
+            background: rgba(23, 17, 13, 0.6);
+            color: var(--text);
+            font-family: inherit;
+            transition: border-color .2s ease, box-shadow .2s ease;
         }
 
         textarea:focus {
-            border-color: rgba(56, 189, 248, 0.6);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15)
+            border-color: rgba(227, 176, 75, 0.6);
+            box-shadow: 0 0 0 3px rgba(227, 176, 75, 0.12);
         }
 
         textarea::placeholder {
-            color: #64748b
+            color: #7a6c5c;
+        }
+
+        .imgbtn {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 auto;
+            border: 1px solid var(--border-strong);
+            border-radius: 13px;
+            background: rgba(23, 17, 13, 0.6);
+            color: #c9ab76;
+            font-size: 19px;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+        .imgbtn:hover {
+            border-color: rgba(227, 176, 75, 0.55);
+            color: var(--brand);
+        }
+
+        .imgbtn.active {
+            border-color: var(--brand);
+            color: var(--brand);
+            box-shadow: 0 0 14px rgba(227, 176, 75, 0.3);
         }
 
         .send {
-            width: 88px;
-            height: 44px;
+            width: 92px;
+            height: 46px;
             border: none;
-            border-radius: 12px;
+            border-radius: 13px;
             cursor: pointer;
             font-size: 14px;
-            color: #fff;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #3b2a14;
+            background: linear-gradient(135deg, #f0c46a, #d99a3f);
+            box-shadow: 0 0 16px rgba(227, 176, 75, 0.28);
+            transition: all .2s ease;
+            font-family: inherit;
+        }
+
+        .send:hover:not(:disabled) {
+            filter: brightness(1.05);
+            box-shadow: 0 0 20px rgba(227, 176, 75, 0.42);
         }
 
         .send:disabled {
-            opacity: .6;
-            cursor: not-allowed
+            opacity: .55;
+            cursor: not-allowed;
         }
 
         .hint {
-            padding: 0 14px 12px;
+            padding: 0 16px 12px;
             color: var(--muted);
             font-size: 12px;
             background: transparent;
@@ -357,8 +553,8 @@
             border: 1px solid var(--border);
             padding: 1px 6px;
             border-radius: 6px;
-            background: rgba(15, 23, 42, 0.6);
-            color: #94a3b8;
+            background: rgba(23, 17, 13, 0.6);
+            color: #a99783;
         }
     </style>
 </head>
@@ -367,18 +563,16 @@
     <div class="topbar">
         <div class="brand">
             <div class="logo">
-                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="2.5" y="4" width="19" height="16" rx="3" fill="white"/>
-                    <circle cx="12" cy="1.8" r="1.4" fill="white"/>
-                    <rect x="11.6" y="1.8" width="0.8" height="2.2" fill="white"/>
-                    <circle cx="8" cy="10" r="1.3" fill="#38bdf8"/>
-                    <circle cx="16" cy="10" r="1.3" fill="#38bdf8"/>
-                    <rect x="7.2" y="14.2" width="9.6" height="1.6" rx="0.8" fill="#38bdf8"/>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 5.4A2.4 2.4 0 0 1 6.4 3H11v15.6H6.4A2.4 2.4 0 0 0 4 21V5.4z" fill="#f0e6d6"/>
+                    <path d="M20 5.4A2.4 2.4 0 0 0 17.6 3H13v15.6h4.6A2.4 2.4 0 0 1 20 21V5.4z" fill="#e4d5b8"/>
+                    <path d="M12 3v15.6" stroke="#c98a3a" stroke-width="1.2"/>
+                    <path d="M7 6.6h2.4M7 9.2h2.4" stroke="#c98a3a" stroke-width="0.9" stroke-linecap="round"/>
                 </svg>
             </div>
             <div class="title">
                 <strong>掌柜智库</strong>
-                <span id="subTitle">在线 · 可查询知识库与联网信息</span>
+                <span id="subTitle">智能听书 · 书籍检索</span>
             </div>
         </div>
         <div class="top-actions">
@@ -390,16 +584,32 @@
     <div class="chat" id="chat">
         <div class="dayline">今天</div>
         <div class="msg bot">
-            <div class="avatar bot">🤖</div>
+            <div class="avatar bot">📖</div>
             <div>
-                <div class="bubble">你好，我是掌柜智库客服。你可以直接提问，我会在“阶段进度”里展示处理过程。</div>
-                <div class="meta">提示：可以问“如何使用万用表测量电压？”</div>
+                <div class="bubble welcome">
+                    <div class="welcome-title">你好，我是<span class="accent">掌柜智库</span></div>
+                    <div class="welcome-text">你的智能听书知识库助手。可以找我荐书、查书、听书笔记，也可以上传封面图片直接找书。</div>
+                </div>
+                <div class="suggestions" id="suggestions">
+                    <button class="chip" data-q="推荐几本科幻有声书">推荐几本科幻有声书</button>
+                    <button class="chip" data-q="《活着》讲了什么">《活着》讲了什么</button>
+                    <button class="chip" data-q="适合通勤听的悬疑小说">适合通勤听的悬疑小说</button>
+                    <button class="chip" data-img="1">📷 上传封面找书</button>
+                </div>
+                <div class="meta">试试上面的示例，或直接在下方提问</div>
             </div>
         </div>
     </div>
 
+    <div id="imgPreviewBar" class="img-preview-bar" style="display:none">
+        <img id="imgPreviewImg" alt="">
+        <span class="img-name" id="imgPreviewName"></span>
+        <button class="img-remove" id="imgRemove">✕ 移除</button>
+    </div>
     <div class="composer">
-        <textarea id="input" placeholder="请输入问题（Enter 发送，Shift+Enter 换行）"></textarea>
+        <button class="imgbtn" id="imgBtn" title="上传图片搜索（封面检索）">📷</button>
+        <input type="file" id="imgInput" accept="image/*" style="display:none">
+        <textarea id="input" placeholder="搜一本书、问一个问题，或上传封面…"></textarea>
         <button class="send" id="send">发送</button>
     </div>
     <div class="hint">快捷键：<span class="kbd">Enter</span> 发送，<span class="kbd">Shift</span>+<span
@@ -417,6 +627,54 @@
     const sendBtn = document.getElementById('send');
     const btnClear = document.getElementById('btnClear');
     const apiPill = document.getElementById('apiPill');
+
+    // 图片搜索（多模态封面检索）
+    const imgBtn = document.getElementById('imgBtn');
+    const imgInput = document.getElementById('imgInput');
+    const imgPreviewBar = document.getElementById('imgPreviewBar');
+    const imgPreviewImg = document.getElementById('imgPreviewImg');
+    const imgPreviewName = document.getElementById('imgPreviewName');
+    const imgRemove = document.getElementById('imgRemove');
+    let queryImageDataUrl = '';   // base64 data url（选中后暂存，发送时随 query 提交）
+
+    imgBtn.addEventListener('click', () => imgInput.click());
+
+    imgInput.addEventListener('change', (e) => {
+        const f = e.target.files[0] || null;
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            queryImageDataUrl = ev.target.result;
+            imgPreviewImg.src = ev.target.result;
+            imgPreviewName.textContent = f.name;
+            imgPreviewBar.style.display = 'flex';
+            imgBtn.classList.add('active');
+        };
+        reader.readAsDataURL(f);
+    });
+
+    imgRemove.addEventListener('click', clearImage);
+
+    function clearImage() {
+        queryImageDataUrl = '';
+        imgInput.value = '';
+        imgPreviewImg.src = '';
+        imgPreviewName.textContent = '';
+        imgPreviewBar.style.display = 'none';
+        imgBtn.classList.remove('active');
+    }
+
+    // 示例问题 chips：点击填入输入框；上传封面 chip 直接唤起图片选择
+    document.querySelectorAll('#suggestions .chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+            if (chip.getAttribute('data-img') === '1') {
+                imgInput.click();
+                return;
+            }
+            inputEl.value = chip.getAttribute('data-q') || chip.textContent.trim();
+            inputEl.focus();
+        });
+    });
 
     // 创建会话: 从localStorage获取sessionId
     // debugger
@@ -454,14 +712,10 @@
     }
 
     function isImageUrl(url) {
-        // 增加宽松度，有些 url 可能后面跟了奇怪的参数
-        // 只要包含 .jpg .png 等扩展名，且后面是 ? # 或 结束，或者被某些标点截断前
-        // 简单判断：路径部分以图片后缀结尾
         try {
             const u = new URL(url);
             return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(u.pathname);
         } catch (e) {
-            // 如果 new URL 失败（比如相对路径或非法字符），退回正则匹配
             return /\.(png|jpe?g|gif|webp|bmp|svg)(\?|#|$)/i.test(url || '');
         }
     }
@@ -469,7 +723,6 @@
     function normalizeUrl(rawUrl) {
         const s = String(rawUrl || '').trim();
         if (!s) return '';
-        // 尽量保留原始 URL，但把空格编码，避免 img src 失败
         return s.replace(/\s/g, '%20');
     }
 
@@ -488,19 +741,13 @@
 
     function extractUrlsLoose(text) {
         const s = String(text || '');
-        // 简单正则提取：匹配 http/https 开头，直到遇到空白字符
-        // [^\s] 包含中文、特殊符号等，直到遇到换行或空格
         const regex = /(https?:\/\/[^\s]+)/g;
         const matches = s.match(regex) || [];
         const urls = [];
-
-        // 去除首尾标点
         const trimTailPunct = (u) => String(u || '').replace(/[)\]}'">，。,;；\]】）＞]+$/g, '');
         const trimHeadPunct = (u) => String(u || '').replace(/^[<([{'"]+|^[＜（【\[]+/g, '');
-
         for (const m of matches) {
             let u = trimHeadPunct(trimTailPunct(m));
-            // 简单清洗可能混入的结尾
             if (u) urls.push(u);
         }
         return dedupeKeepOrder(urls);
@@ -508,7 +755,6 @@
 
     function findLastImageMarkerIndex(raw) {
         const s = String(raw || '');
-        // 支持多种写法：【图片】、【 图片 】、[图片]、[ 图片 ]
         const re = /【\s*图片\s*】|\[\s*图片\s*\]/g;
         let m;
         let lastIdx = -1;
@@ -529,13 +775,11 @@
         const after = raw.slice(idx + len).trim();
         const urls = [];
 
-        // 优先按“每行一个 URL”的方式解析，允许 URL 中包含空格
         const lines = after.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
         for (const line of lines) {
             if (line.startsWith('http://') || line.startsWith('https://')) {
                 urls.push(line);
             } else {
-                // 兼容同一行包含多个 URL 的情况
                 const matches = extractUrlsLoose(line);
                 for (const u of matches) {
                     urls.push(u);
@@ -543,7 +787,6 @@
             }
         }
 
-        // 去重保序 + 过滤图片链接
         const seen = new Set();
         const images = [];
         for (const u of urls) {
@@ -562,16 +805,9 @@
             ? candidateImageUrls.map(normalizeUrl).filter(isImageUrl)
             : [];
         const hasBlockImages = imagesFromBlock && imagesFromBlock.length > 0;
-
-        // 使用宽松提取
         const looseImages = extractUrlsLoose(answerText).map(normalizeUrl).filter(isImageUrl);
-
-        // 只要后端给了候选图片，就展示（避免答案没写“如图”但用户仍需要看图）
-        // 或者从文本里提取到了图片 URL
         const shouldShow = hasBlockImages || (candidates.length > 0) || (looseImages.length > 0);
 
-        // 优先级：Block 显式标记 > 后端候选 > 文本宽松提取
-        // 注意：这里做个并集可能更好，防止漏掉
         const allImages = new Set([
             ...(hasBlockImages ? imagesFromBlock : []),
             ...candidates,
@@ -620,10 +856,14 @@
     }
 
     function addUserMsg(text) {
+        const imgHtml = queryImageDataUrl
+            ? `<div class="bubble-img"><img src="${queryImageDataUrl}" alt="查询图片"></div>`
+            : '';
         const html = `
         <div class="msg user">
           <div>
             <div class="bubble">${escapeHtml(text)}</div>
+            ${imgHtml}
             <div class="meta">${nowTime()}</div>
           </div>
           <div class="avatar">我</div>
@@ -651,7 +891,7 @@
         const id = 'bot-his-' + Math.random().toString(36).slice(2);
         const html = `
         <div class="msg bot" id="${id}">
-          <div class="avatar bot">🤖</div>
+          <div class="avatar bot">📖</div>
           <div>
             <div class="bubble"><div class="answer"></div></div>
             <div class="meta">${formatTime(ts)}</div>
@@ -671,7 +911,7 @@
         const id = 'bot-' + Math.random().toString(36).slice(2);
         const html = `
         <div class="msg bot" id="${id}">
-          <div class="avatar bot">🤖</div>
+          <div class="avatar bot">📖</div>
           <div style="min-width: 180px;">
             <div class="bubble">
               <span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
@@ -754,13 +994,14 @@
         }
     }
 
-    async function submitQuery(text) {
+    async function submitQuery(text, imageDataUrl) {
         const res = await fetch(`${API_BASE}/query`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 query: text,
-                session_id: sessionId
+                session_id: sessionId,
+                query_image: imageDataUrl || ''
             })
         });
         if (!res.ok) {
@@ -772,14 +1013,18 @@
 
     async function onSend() {
         const text = (inputEl.value || '').trim();
-        if (!text) return;
+        const hasImage = !!queryImageDataUrl;
+        if (!text && !hasImage) return;
         inputEl.value = '';
-        addUserMsg(text);
+        // 暂存本次发送的图片，随后清空输入区的图片状态
+        const sentImage = queryImageDataUrl;
+        addUserMsg(text || '（图片查询）');
+        clearImage();
         const botMsgEl = addBotMsgSkeleton();
         sendBtn.disabled = true;
 
         try {
-            const data = await submitQuery(text);
+            const data = await submitQuery(text, sentImage);
 
             // 渲染初始状态
             renderProgress(botMsgEl, [], [], 'pending');
@@ -802,11 +1047,9 @@
                 try {
                     const d = JSON.parse(e.data || '{}');
                     renderProgress(botMsgEl, d.done_list, d.running_list, d.status);
-                    // 当进度状态已完成时，提前结束“...”等待态
                     if (d && d.status === 'completed') {
                         const typing = botMsgEl.querySelector('.typing');
                         if (typing) typing.remove();
-                        // 防止后端未发送 final 导致按钮一直禁用
                         sendBtn.disabled = false;
                     }
                 } catch (_) {
@@ -819,7 +1062,6 @@
                     const delta = d.delta || '';
                     if (delta) {
                         rawAnswerText += delta;
-                        // 即使后端未发送 final，也尽可能在流式过程中渲染图片
                         renderAnswerWithImages(answerEl, rawAnswerText, []);
                         scrollToBottom();
                     }
@@ -832,9 +1074,6 @@
                 const typing = botMsgEl.querySelector('.typing');
                 if (typing) typing.remove();
 
-                // ★ 关键修复：强制把所有"进行中 ⏳"的节点标记为"已完成 ✅"
-                // 原因：最后一条 progress 事件可能还没到就被 final 抢先了，
-                // 导致"生成答案"等节点永远卡在 ⏳ 状态不变绿
                 const details = botMsgEl.querySelector('details.progress');
                 if (details) {
                     const ul = details.querySelector('ul');
@@ -846,19 +1085,16 @@
                             }
                         });
                     }
-                    // 更新 summary：全部完成
                     const summary = details.querySelector('summary');
                     if (summary) {
                         const totalDone = details.querySelectorAll('li').length;
                         summary.textContent = `阶段进度（已完成${totalDone}，进行中0，状态：已完成）`;
                     }
-                    // 收起进度条
                     details.removeAttribute('open');
                 }
 
                 try {
                     const d = JSON.parse(e.data || '{}');
-                    // 优先使用 final 包里的完整 answer，否则回退到流式拼接的文本
                     const finalText = (d && typeof d.answer === 'string' && d.answer.trim().length > 0) ? d.answer : (rawAnswerText || answerEl.textContent || '');
                     renderAnswerWithImages(answerEl, finalText, d.image_urls || []);
                 } catch (_) {
@@ -870,7 +1106,6 @@
             es.addEventListener('error', (e) => {
                 const typing = botMsgEl.querySelector('.typing');
                 if (typing) typing.remove();
-                // 收起进度条
                 const progress = botMsgEl.querySelector('details.progress');
                 if (progress) progress.removeAttribute('open');
 
@@ -928,5 +1163,3 @@
 </script>
 </body>
 </html>
-
-

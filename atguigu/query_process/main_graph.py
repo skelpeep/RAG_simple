@@ -7,6 +7,7 @@ from atguigu.query_process.nodes.node_rerank import NodeRerank
 from atguigu.query_process.nodes.node_rrf import NodeRrf
 from atguigu.query_process.nodes.node_search_embedding import NodeSearchEmbedding
 from atguigu.query_process.nodes.node_search_embedding_hyde import NodeSearchEmbeddingHyde
+from atguigu.query_process.nodes.node_search_cover import NodeSearchCover
 from atguigu.query_process.nodes.node_web_search_mcp import NodeWebSearchMcp
 from atguigu.query_process.state import QueryGraphState
 from atguigu.tool.json_format_tool import json_format
@@ -26,6 +27,7 @@ class MainGraphRunner:
         self.builder.add_node(NodeItemNameConfirm.name,NodeItemNameConfirm())
         self.builder.add_node(NodeSearchEmbedding.name,NodeSearchEmbedding())
         self.builder.add_node(NodeSearchEmbeddingHyde.name,NodeSearchEmbeddingHyde())
+        self.builder.add_node(NodeSearchCover.name,NodeSearchCover())
         self.builder.add_node(NodeWebSearchMcp.name,NodeWebSearchMcp())
         self.builder.add_node(NodeRrf.name,NodeRrf())
         self.builder.add_node(NodeRerank.name,NodeRerank())
@@ -37,6 +39,7 @@ class MainGraphRunner:
         self.builder.add_conditional_edges(NodeItemNameConfirm.name, self.after_confirm_router)
         self.builder.add_edge(NodeSearchEmbedding.name, NodeRrf.name)
         self.builder.add_edge(NodeSearchEmbeddingHyde.name, NodeRrf.name)
+        self.builder.add_edge(NodeSearchCover.name, NodeRrf.name)
         self.builder.add_edge(NodeWebSearchMcp.name, NodeRrf.name)
         self.builder.add_edge(NodeRrf.name, NodeRerank.name)
         self.builder.add_edge(NodeRerank.name, NodeAnswerOutput.name)
@@ -48,7 +51,7 @@ class MainGraphRunner:
         if answer:
             return  NodeAnswerOutput.name
         else:
-            return [NodeSearchEmbedding.name,NodeWebSearchMcp.name,NodeSearchEmbeddingHyde.name]
+            return [NodeSearchEmbedding.name,NodeWebSearchMcp.name,NodeSearchEmbeddingHyde.name,NodeSearchCover.name]
 
     def run(self,state):
         if self.graph is None:
