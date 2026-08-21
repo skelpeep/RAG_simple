@@ -1,8 +1,12 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
+
+# 项目根目录（本文件位于 atguigu/config/ 下，上溯三级即项目根）
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 class MineruConfig:
@@ -88,7 +92,7 @@ class RerankConfig:
 
 
 class ImportConfig:
-    # 导入文件的本地暂存目录（可通过环境变量 IMPORT_OUTPUT_DIR 覆盖，默认项目内 data/import）
-    output_dir = os.getenv("IMPORT_OUTPUT_DIR", "data/import")
+    # 导入文件的本地暂存目录（可通过环境变量 IMPORT_OUTPUT_DIR 覆盖，默认项目根 data/import）
+    output_dir = os.getenv("IMPORT_OUTPUT_DIR", str(PROJECT_ROOT / "data" / "import"))
 
 

@@ -52,8 +52,9 @@ def _count(collection: str, expr: str = "") -> int:
 def _serialize_row(row):
     """把 Milvus 返回的行做一次类型归一化，保证可 JSON 序列化。"""
     out = dict(row)
+    # Milvus 主键 id 是 INT64，可能超过 JS 安全整数 2^53，转字符串避免前端 Number 精度丢失
     if "id" in out and out["id"] is not None:
-        out["id"] = int(out["id"])
+        out["id"] = str(out["id"])
     if "part" in out and out["part"] is not None:
         out["part"] = int(out["part"])
     return out
