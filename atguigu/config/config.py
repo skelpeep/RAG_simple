@@ -60,3 +60,8 @@ class RerankConfig:
     rerank_api_key = os.getenv("RERANK_API_KEY")
 
 
+class ImportConfig:
+    # 导入文件的本地暂存目录（可通过环境变量 IMPORT_OUTPUT_DIR 覆盖，默认项目内 data/import）
+    output_dir = os.getenv("IMPORT_OUTPUT_DIR", "data/import")
+
+

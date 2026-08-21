@@ -29,4 +29,5 @@ class QueryGraphState(TypedDict):
     # 辅助信息
     item_names: List[str]  # 提取出的书籍/作者/类别/场景主体（如 刘慈欣《三体》、科幻有声书）
     rewritten_query: str  # 改写后的问题
+    is_topic_search: bool  # 是否为类别/场景/主题类检索（未匹配到具体书籍主体，走无 item_name 过滤的向量检索）
     history: list  # 历史对话记录

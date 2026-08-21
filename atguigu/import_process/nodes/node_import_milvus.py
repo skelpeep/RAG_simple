@@ -77,6 +77,10 @@ class NodeImportMilvus(NodeBase):
                 datatype=DataType.VARCHAR,
                 max_length=50
             ).add_field(
+                field_name="source_path",
+                datatype=DataType.VARCHAR,
+                max_length=500
+            ).add_field(
                 field_name="part",
                 datatype=DataType.INT64
             ).add_field(
@@ -148,7 +152,7 @@ class NodeImportMilvus(NodeBase):
 
 if __name__ == '__main__':
     node = NodeImportMilvus()
-    with open(r"D:\1neiwangtong\output\hak180产品安全手册\embedding_chunks.json","r",encoding="utf=8") as f:
+    with open(r"D:\1neiwangtong\output\hak180产品安全手册\embedding_chunks.json","r",encoding="utf-8") as f:
         chunks = json.load(f)
     init_state ={
         "chunks":chunks

@@ -196,7 +196,7 @@ class NodeItemNameRecognition(NodeBase):
             )
         return collection_name, milvus_client
 
-    def insert_data_backup(self, chunks, collection_name, file_title, metadata, milvus_client):
+    def insert_data_backup(self, chunks, collection_name, file_title, metadata, milvus_client, source_path=""):
         item_name = metadata.get("item_name")
         milvus_client.load_collection(collection_name=collection_name)
         safe_item_name = item_name.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
@@ -225,6 +225,7 @@ class NodeItemNameRecognition(NodeBase):
             chunk["content_type"] = metadata.get("content_type", "")
             chunk["category"] = metadata.get("category", "")
             chunk["duration"] = metadata.get("duration", "")
+            chunk["source_path"] = source_path
 
     def process(self, state: ImportGraphState):
         chunks, file_title = self.get_chunks(state)
@@ -239,9 +240,11 @@ class NodeItemNameRecognition(NodeBase):
             if value:
                 metadata[key] = value
 
+        source_path = state.get("source_path", "")
+
         collection_name, milvus_client = self.create_milvus_collection()
 
-        self.insert_data_backup(chunks, collection_name, file_title, metadata, milvus_client)
+        self.insert_data_backup(chunks, collection_name, file_title, metadata, milvus_client, source_path=source_path)
 
         return {
             "item_name": metadata.get("item_name"),

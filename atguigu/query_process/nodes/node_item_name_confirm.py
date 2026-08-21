@@ -35,7 +35,7 @@ class NodeItemNameConfirm(NodeBase):
             update_item_names_and_query(ids, final_item_names, rewritten_query)
         return message_id
 
-    def align_item_names(self, answer, final_item_names, final_search_item_names):
+    def align_item_names(self, answer, final_item_names, final_search_item_names, item_names):
         confirm_item_names = [item.get("search_item_name") for item in final_search_item_names if
                               item.get("score") >= 0.85]
         option_item_name = [
@@ -43,6 +43,7 @@ class NodeItemNameConfirm(NodeBase):
             for item in final_search_item_names
             if 0.6 <= item.get("score") < 0.85]
 
+        is_topic_search = False
         if confirm_item_names:
             final_item_names = confirm_item_names
             answer = ""
@@ -50,9 +51,12 @@ class NodeItemNameConfirm(NodeBase):
             final_item_names = []
             answer = f"请确认你想了解哪本书？{','.join(option_item_name)}"
         else:
-            final_item_names = []
-            answer = "无法识别书籍名称，请重新输入。"
-        return answer, final_item_names
+            # 未匹配到具体书籍主体：很可能是“类别/场景/主题”类查询（如“科幻有声书”“通勤悬疑”）。
+            # 保留提取到的主体词作为检索主题，走不带 item_name 过滤的向量检索，而不是直接判失败。
+            final_item_names = [name for name in item_names if name]
+            is_topic_search = True
+            answer = ""
+        return answer, final_item_names, is_topic_search
 
     def get_final_search_item_names(self, item_names):
         # 对item_names向量化，遍历进行混合搜索
@@ -192,10 +196,11 @@ class NodeItemNameConfirm(NodeBase):
         #去milvus进行混合检索，先定义检索的工具
         answer = ""
         final_item_names =[]
+        is_topic_search = False
         if item_names:
             final_search_item_names = self.get_final_search_item_names(item_names)
 
-            answer, final_item_names = self.align_item_names(answer, final_item_names, final_search_item_names)
+            answer, final_item_names, is_topic_search = self.align_item_names(answer, final_item_names, final_search_item_names, item_names)
         else:
             # LLM 未识别出任何书籍/主体名称：调用大模型生成一句自然的追问语，
             # 让路由走"回答"分支把追问语返回给用户，引导其补充书籍信息（实现聊天功能）。
@@ -209,6 +214,7 @@ class NodeItemNameConfirm(NodeBase):
             "original_query":original_query,
             "rewritten_query":rewritten_query,
             "item_names":final_item_names,
+            "is_topic_search":is_topic_search,
             "answer":answer,
             "history":get_recent_history_list(session_id,limit=10)
         }

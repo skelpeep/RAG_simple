@@ -35,12 +35,12 @@ class NodeSearchEmbedding(NodeBase):
         dense_data = embeddings.get("dense")[0]
         sparse_data = embeddings.get("sparse")[0]
 
-        # item_names = [
-        #     item.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
-        #     for item in item_names
-        # ]
-
-        expr = f"item_name in {json.dumps(item_names,ensure_ascii=False)}"
+        # 主题类检索（类别/场景/主题，如“科幻有声书”）时 item_names 并非具体书籍主体，
+        # 此时不做 item_name 过滤，交给向量相似度召回，避免过滤条件过严导致零命中。
+        is_topic_search = state.get("is_topic_search", False)
+        expr = None
+        if not is_topic_search:
+            expr = f"item_name in {json.dumps(item_names,ensure_ascii=False)}"
 
         reqs = create_reqs(
             dense_data=dense_data,

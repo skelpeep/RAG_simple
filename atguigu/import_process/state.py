@@ -18,6 +18,7 @@ class ImportGraphState(TypedDict):
     file_title: str # 文件标题（文件名去后缀）
     pdf_path: str   # PDF 文件路径 (如果输入是PDF)
     md_path: str    # Markdown 文件路径 (转换后或直接输入的)
+    source_path: str  # 来源路径或资源链接（如 MinIO 对象名 / 本地路径），用于检索溯源
 
     # 内容数据
     md_content: str # Markdown 的全文内容

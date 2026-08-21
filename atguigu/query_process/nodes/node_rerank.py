@@ -83,7 +83,10 @@ class NodeRerank(NodeBase):
                 "book_name": doc.get("book_name", ""),
                 "author": doc.get("author", ""),
                 "content_type": doc.get("content_type", ""),
+                "category": doc.get("category", ""),
+                "duration": doc.get("duration", ""),
                 "file_title": doc.get("file_title", ""),
+                "source_path": doc.get("source_path", ""),
             }
             for doc in merge_docs
         ]

@@ -24,21 +24,25 @@ class NodeWebSearchMcp(NodeBase):
             logger.error("rewritten_query不能为空")
             raise ValueError("rewritten_query不能为空")
 
-        #调用mcp
-
-        result=asyncio.run(self.mcp_run(rewritten_query))
-        search_data = json.loads(result.content[0].text).get("pages")
-        return {
-            "web_search_docs":[
+        # 网络搜索属于“锦上添花”的召回来源：一旦 MCP 未配置/超时/失败，
+        # 降级为空结果，避免拖垮整条查询链路（符合基础异常处理要求）。
+        try:
+            result = asyncio.run(self.mcp_run(rewritten_query))
+            search_data = json.loads(result.content[0].text).get("pages")
+            web_search_docs = [
                 {
-                    "title":item.get("title"),
-                    "content":item.get("snippet"),
-                    "url":item.get("url"),
-                    "source":"web"
+                    "title": item.get("title"),
+                    "content": item.get("snippet"),
+                    "url": item.get("url"),
+                    "source": "web"
                 }
-                for item in search_data
+                for item in (search_data or [])
             ]
-        }
+        except Exception as e:
+            logger.error(f"网络搜索失败（降级为不联网）：{e}")
+            web_search_docs = []
+
+        return {"web_search_docs": web_search_docs}
 
     async def mcp_run(self,query,limit=10) -> None:
         token = McpConfig.api_key
